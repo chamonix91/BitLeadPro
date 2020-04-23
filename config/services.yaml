@@ -4,6 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+#    env(MONGODB_URL): 'mongodb://localhost:27017'
+#    env(MONGODB_DB): 'OpenMarketMLM'
+    mongodb_server: "mongodb://localhost:27017"
 
 services:
     # default configuration for services in *this* file
@@ -28,9 +31,9 @@ services:
 
 # FOS user config
 fos_user:
-    db_driver:      orm # other valid values are 'mongodb', 'couchdb' and 'propel'
+    db_driver:      mongodb # other valid values are 'mongodb', 'couchdb' and 'propel'
     firewall_name:  main
-    user_class:     App\Entity\User
+    user_class:     App\Document\User
     from_email:
         address: "no-reply@mlm.com"
         sender_name: "MLM"

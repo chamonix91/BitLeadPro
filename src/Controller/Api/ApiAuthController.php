@@ -13,7 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Entity\User;
+use App\Document\User;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -54,7 +54,7 @@ class ApiAuthController extends AbstractController
             ->setPlainPassword($password)
             ->setEmail($email)
             ->setEnabled(true)
-            ->setRoles(['ROLE_USER'])
+            ->setRoles(array('ROLE_USER'))
             ->setSuperAdmin(false)
         ;
         try {

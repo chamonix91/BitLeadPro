@@ -7,6 +7,7 @@
  */
 
 namespace App\Document;
+use Doctrine\Common\Collections\ArrayCollection;
 use FOS\UserBundle\Model\User as BaseUser;
 
 
@@ -40,6 +41,16 @@ class User extends BaseUser
      */
     public $partnership;
 
+    /** @MongoDB\ReferenceMany(targetDocument=Direct::class, mappedBy="upline", cascade={"persist"}) */
+    private $directs;
+
+    /**
+     * User constructor.
+     */
+    public function __construct()
+    {
+        $this->directs = new arrayCollection();
+    }
 
 
     /**
@@ -88,6 +99,44 @@ class User extends BaseUser
     public function setLevel($level): void
     {
         $this->level = $level;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPartnership()
+    {
+        return $this->partnership;
+    }
+
+    /**
+     * @param mixed $partnership
+     */
+    public function setPartnership($partnership): void
+    {
+        $this->partnership = $partnership;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDirects()
+    {
+        return $this->directs;
+    }
+
+    /**
+     * @param mixed $directs
+     * @return User
+     */
+    public function addDirects(Direct $directs): self
+    {
+        if (!$this->directs->contains($directs)) {
+            $this->directs[] = $directs;
+            $directs->setUpline($this);
+        }
+
+        return $this;
     }
 
 

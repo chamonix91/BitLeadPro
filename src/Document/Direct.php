@@ -22,23 +22,40 @@ class Direct
     protected $id;
 
     /** @MongoDB\ReferenceOne(targetDocument=User::class, inversedBy="directs", cascade={"persist"}) */
-    private $upline;
+    private $user;
 
     /**
      * @return mixed
      */
-    public function getUpline()
+    public function getId()
     {
-        return $this->upline;
+        return $this->id;
     }
 
     /**
-     * @param mixed $upline
+     * @param mixed $id
      */
-    public function setUpline($upline): void
+    public function setId($id): void
     {
-        $this->upline = $upline;
+        $this->id = $id;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param mixed $user
+     */
+    public function setUser($user): void
+    {
+        $this->user = $user;
+    }
+
 
 
 

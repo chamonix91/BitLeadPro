@@ -41,7 +41,7 @@ class User extends BaseUser
      */
     public $partnership;
 
-    /** @MongoDB\ReferenceMany(targetDocument=Direct::class, mappedBy="upline", cascade={"persist"}) */
+    /** @MongoDB\ReferenceMany(targetDocument=Direct::class, mappedBy="user", cascade={"persist"}) */
     private $directs;
 
     /**
@@ -133,7 +133,7 @@ class User extends BaseUser
     {
         if (!$this->directs->contains($directs)) {
             $this->directs[] = $directs;
-            $directs->setUpline($this);
+            $directs->setUser($this);
         }
 
         return $this;

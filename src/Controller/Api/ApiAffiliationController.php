@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Util\SecureRandom;
+
 
 /**
  * @Route("/affiliation")
@@ -43,6 +43,7 @@ class ApiAffiliationController extends AbstractController
 
         $partnership = new Partnership();
         $upline = $dm->getRepository(User::class)->find($id);
+        //dump($upline);die();
         $codeupline= $upline->getCodeUser();
         $data = json_decode(
             $request->getContent(),
@@ -69,19 +70,32 @@ class ApiAffiliationController extends AbstractController
             $user->setLevel('0');
             $user->setPartnership($partnership);
 
-        $dm->persist($upline);
-        $dm->flush();
+
+
         try {
             $userManager->updateUser($user, true);
         } catch (\Exception $e) {
             return new JsonResponse(["error" => $e->getMessage()], 500);
         }
 
+
+
+
         $direct = new Direct();
-        $direct->setUpline($upline);
+        $direct->setUser($user);
+
+
 
         $upline->addDirects($direct);
-        $dm->merge($upline);
+
+
+        dump($direct);
+        dump($upline);
+        die();
+
+
+        $dm->persist($direct);
+        $dm->persist($upline);
         $dm->flush();
 
         $partnership->setCodeDownline($user->getCodeUser());

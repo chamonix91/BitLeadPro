@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\HttpFoundation\Request;
-
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @Route("/affiliation")
@@ -38,7 +38,7 @@ class ApiAffiliationController extends AbstractController
      * @param User $user
      * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function newAffiliation(Request $request,  UserManagerInterface $userManager,DocumentManager  $dm, $id){
+    public function newAffiliation(SerializerInterface $serializer, Request $request,  UserManagerInterface $userManager,DocumentManager  $dm, $id){
 
 
         $partnership = new Partnership();
@@ -68,6 +68,8 @@ class ApiAffiliationController extends AbstractController
             $user->setCodeUser($codeuser);
             $user->setLevel('0');
             $user->setPartnership($partnership);
+            $user->setUpline($upline);
+            //dump($user);die();
 
         try {
             $userManager->updateUser($user, true);
@@ -75,10 +77,16 @@ class ApiAffiliationController extends AbstractController
             return new JsonResponse(["error" => $e->getMessage()], 500);
         }
 
+        //$entityAsArray = $this->serializer->normalize($entity, null);
 
-        $upline->setDirects($user);
+
+
+
+
+
+        /*$upline->setDirects($arrayUser);
         $dm->persist($upline);
-        $dm->flush();
+        $dm->flush();*/
 
 
         $partnership->setCodeDownline($user->getCodeUser());

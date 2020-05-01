@@ -70,8 +70,6 @@ class ApiAffiliationController extends AbstractController
             $user->setLevel('0');
             $user->setPartnership($partnership);
 
-
-
         try {
             $userManager->updateUser($user, true);
         } catch (\Exception $e) {
@@ -79,24 +77,11 @@ class ApiAffiliationController extends AbstractController
         }
 
 
-
-
-        $direct = new Direct();
-        $direct->setUser($user);
-
-
-
-        $upline->addDirects($direct);
-
-
-        dump($direct);
-        dump($upline);
-        die();
-
-
-        $dm->persist($direct);
+        $upline->setDirects($user);
+        dump($upline);die();
         $dm->persist($upline);
         $dm->flush();
+
 
         $partnership->setCodeDownline($user->getCodeUser());
 

@@ -42,8 +42,18 @@ class User extends BaseUser
     public $partnership;
 
 
-    /** @MongoDB\ReferenceOne(targetDocument=User::class, cascade={"persist"}) */
+    /** @MongoDB\ReferenceOne(targetDocument=User::class,  inversedBy="directs",cascade={"persist"}) */
+    private $upline;
+
+    /** @MongoDB\ReferenceMany(targetDocument=User::class, mappedBy="upline", cascade={"persist"}) */
     private $directs;
+
+    public function __construct()
+    {
+        $this->directs = new \Doctrine\Common\Collections\ArrayCollection();
+
+    }
+
 
     /**
      * @return mixed
@@ -123,6 +133,22 @@ class User extends BaseUser
     public function setDirects($directs): void
     {
         $this->directs = $directs;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUpline()
+    {
+        return $this->upline;
+    }
+
+    /**
+     * @param mixed $upline
+     */
+    public function setUpline($upline): void
+    {
+        $this->upline = $upline;
     }
 
 

@@ -34,25 +34,25 @@ class ApiMlmController extends AbstractController
         $user = $dm->getRepository(User::class)->find($id);
 
         $directs= $MlmService->AllDirects($serializer, $user);
+        $tab = array();
+
+        foreach ($directs as $direct) {
+            $tabdir = array();
+            $ds = $MlmService->AllDirects($serializer, $direct);
+            foreach ($ds as $d ){
+                array_push($tabdir, $d->getUsername());
+            }
+            array_push($tab, $tabdir);
 
 
-
-        $c = count($directs);
-        dump($c);die();
-        /*foreach ($directs as $direct) {
-
-            $upline = $direct->getUser();
+        }
 
 
-            dump($upline->getId());
-        }*/
-
+        dump($tab);
         die();
 
 
-        $c = count($directs);
 
-        dump($directs);die();
 
 
 

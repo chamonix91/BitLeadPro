@@ -41,17 +41,9 @@ class User extends BaseUser
      */
     public $partnership;
 
-    /** @MongoDB\ReferenceMany(targetDocument=Direct::class, mappedBy="user", cascade={"persist"}) */
+
+    /** @MongoDB\ReferenceOne(targetDocument=User::class, cascade={"persist"}) */
     private $directs;
-
-    /**
-     * User constructor.
-     */
-    public function __construct()
-    {
-        $this->directs = new arrayCollection();
-    }
-
 
     /**
      * @return mixed
@@ -127,17 +119,17 @@ class User extends BaseUser
 
     /**
      * @param mixed $directs
-     * @return User
      */
-    public function addDirects(Direct $directs): self
+    public function setDirects($directs): void
     {
-        if (!$this->directs->contains($directs)) {
-            $this->directs[] = $directs;
-            $directs->setUser($this);
-        }
-
-        return $this;
+        $this->directs = $directs;
     }
+
+
+
+
+
+
 
 
 

@@ -10,6 +10,7 @@ namespace App\Controller\Api;
 
 use App\Document\User;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use FOS\UserBundle\Model\UserManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -38,18 +39,6 @@ class ApiUserController extends AbstractController
      */
     public function detail(Request $request,$id,DocumentManager  $dm)
     {
-        /*$response = new Response();
-        $timestamp = time() + 30 * 86400;
-        $response->headers->setCookie(new Cookie('aff_id', $id, $timestamp));
-        $response->send();
-        $cookies = $response->headers->getCookies();*/
-
-
-
-
-
-
-        //dump($cookies); die();
 
         $user = new User() ;
         //$this->denyAccessUnlessGranted('view', $user);
@@ -69,5 +58,27 @@ class ApiUserController extends AbstractController
         $json = $serializer->serialize($user, 'json');
         return $json;
     }
+
+    //////////////////////////////////////////////
+    ///////////  GET CURRENT USER  ///////////////
+    /// //////////////////////////////////////////
+
+    /**
+     * @Route("/current", name="api_user_detail", methods={"GET"})
+     * @param User $user
+     * @return JsonResponse
+     */
+    public function getloggedtUser(Request $request, UserManagerInterface $userManager)
+    {
+
+
+        $user = $this->getUser();
+
+
+
+        return new JsonResponse($this->serialize($user), 200);
+    }
+
+
 
 }

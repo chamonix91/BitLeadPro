@@ -78,7 +78,6 @@ class ApiAffiliationController extends AbstractController
 
 
         $upline->setDirects($user);
-        dump($upline);die();
         $dm->persist($upline);
         $dm->flush();
 

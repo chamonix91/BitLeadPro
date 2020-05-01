@@ -35,14 +35,17 @@ class ApiMlmController extends AbstractController
 
         $directs= $MlmService->AllDirects($serializer, $user);
 
+
+
         $c = count($directs);
-        foreach ($directs as $direct) {
+        dump($c);die();
+        /*foreach ($directs as $direct) {
 
             $upline = $direct->getUser();
 
 
             dump($upline->getId());
-        }
+        }*/
 
         die();
 

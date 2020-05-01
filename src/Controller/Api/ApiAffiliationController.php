@@ -43,7 +43,6 @@ class ApiAffiliationController extends AbstractController
 
         $partnership = new Partnership();
         $upline = $dm->getRepository(User::class)->find($id);
-        //dump($upline);die();
         $codeupline= $upline->getCodeUser();
         $data = json_decode(
             $request->getContent(),

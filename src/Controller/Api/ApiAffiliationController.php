@@ -52,7 +52,7 @@ class ApiAffiliationController extends AbstractController
         $username = $data['username'];
         $password = $data['password'];
         $email = $data['email'];
-        $codeuser = substr(md5(time()), 0, 15);
+        //$codeuser = substr(md5(time()), 0, 15);
         $coupon = $data['coupon'];
         $withcoupon = $data['withcoupon'];
         $firstname = $data['firstname'];
@@ -71,7 +71,6 @@ class ApiAffiliationController extends AbstractController
             $user->setEnabled(true);
             $user->setRoles(array('ROLE_USER'));
             $user->setSuperAdmin(false);
-            $user->setCodeUser($codeuser);
             $user->setLevel('0');
             $user->setPartnership($partnership);
             $user->setFirstname($firstname);
@@ -144,7 +143,7 @@ class ApiAffiliationController extends AbstractController
         $username = $data['username'];
         $password = $data['password'];
         $email = $data['email'];
-        $codeuser = substr(md5(time()), 0, 15);
+        //$codeuser = substr(md5(time()), 0, 15);
         $coupon = $data['coupon'];
         $withcoupon = $data['withcoupon'];
         $firstname = $data['firstname'];
@@ -161,7 +160,6 @@ class ApiAffiliationController extends AbstractController
         $user->setEnabled(true);
         $user->setRoles(array('ROLE_USER'));
         $user->setSuperAdmin(false);
-        $user->setCodeUser($codeuser);
         $user->setLevel('0');
         $user->setFirstname($firstname);
         $user->setLastname($lastname);

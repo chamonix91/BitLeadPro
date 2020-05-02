@@ -38,4 +38,30 @@ class MlmService
 
     }
 
+    /////////////////////////
+    ////  get my directs ////
+    /////////////////////////
+
+    public function getmyDirects( Array $tab, User $user )
+    {
+
+        foreach ($directs as $direct) {
+            $tabdir = array();
+            $ds = $MlmService->AllDirects($serializer, $direct);
+            foreach ($ds as $d ){
+                array_push($tabdir, $d->getUsername());
+            }
+            array_push($tab, $tabdir);
+
+
+        }
+
+
+
+        return $directs;
+
+
+    }
+
+
 }

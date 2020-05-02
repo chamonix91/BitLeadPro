@@ -80,88 +80,6 @@ class User extends BaseUser
 
     }
 
-
-
-    /**
-     * @return mixed
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param mixed $id
-     */
-    public function setId($id): void
-    {
-        $this->id = $id;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLevel()
-    {
-        return $this->level;
-    }
-
-    /**
-     * @param mixed $level
-     */
-    public function setLevel($level): void
-    {
-        $this->level = $level;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPartnership()
-    {
-        return $this->partnership;
-    }
-
-    /**
-     * @param mixed $partnership
-     */
-    public function setPartnership($partnership): void
-    {
-        $this->partnership = $partnership;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDirects()
-    {
-        return $this->directs;
-    }
-
-    /**
-     * @param mixed $directs
-     */
-    public function setDirects($directs): void
-    {
-        $this->directs = $directs;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUpline()
-    {
-        return $this->upline;
-    }
-
-    /**
-     * @param mixed $upline
-     */
-    public function setUpline($upline): void
-    {
-        $this->upline = $upline;
-    }
-
     /**
      * @return mixed
      */
@@ -213,6 +131,38 @@ class User extends BaseUser
     /**
      * @return mixed
      */
+    public function getCoupons()
+    {
+        return $this->coupons;
+    }
+
+    /**
+     * @param mixed $coupons
+     */
+    public function setCoupons($coupons): void
+    {
+        $this->coupons = $coupons;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDirects()
+    {
+        return $this->directs;
+    }
+
+    /**
+     * @param mixed $directs
+     */
+    public function setDirects($directs): void
+    {
+        $this->directs = $directs;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getFirstname()
     {
         return $this->firstname;
@@ -224,6 +174,22 @@ class User extends BaseUser
     public function setFirstname($firstname): void
     {
         $this->firstname = $firstname;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id): void
+    {
+        $this->id = $id;
     }
 
     /**
@@ -258,10 +224,37 @@ class User extends BaseUser
         $this->postalcode = $postalcode;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getLevel()
+    {
+        return $this->level;
+    }
 
+    /**
+     * @param mixed $level
+     */
+    public function setLevel($level): void
+    {
+        $this->level = $level;
+    }
 
+    /**
+     * @return mixed
+     */
+    public function getUpline()
+    {
+        return $this->upline;
+    }
 
-
+    /**
+     * @param mixed $upline
+     */
+    public function setUpline($upline): void
+    {
+        $this->upline = $upline;
+    }
 
 
 

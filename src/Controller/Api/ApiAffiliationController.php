@@ -10,7 +10,6 @@ namespace App\Controller\Api;
 
 use App\Document\User;
 use App\Document\Coupon;
-use App\Document\Partnership;
 use App\Document\Direct;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\UserBundle\Model\UserManagerInterface;
@@ -42,7 +41,7 @@ class ApiAffiliationController extends AbstractController
     public function newAffiliation(SerializerInterface $serializer, Request $request,  UserManagerInterface $userManager,DocumentManager  $dm, $id){
 
 
-        $partnership = new Partnership();
+
         $upline = $dm->getRepository(User::class)->find($id);
         $data = json_decode(
             $request->getContent(),
@@ -72,7 +71,6 @@ class ApiAffiliationController extends AbstractController
             $user->setRoles(array('ROLE_USER'));
             $user->setSuperAdmin(false);
             $user->setLevel('0');
-            $user->setPartnership($partnership);
             $user->setFirstname($firstname);
             $user->setLastname($lastname);
             $user->setAddress($address);

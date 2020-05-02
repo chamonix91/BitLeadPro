@@ -83,10 +83,19 @@ class ApiAffiliationController extends AbstractController
 
             if ($withcoupon == "1"){
 
+
                 $couponn =$dm->getRepository(Coupon::class)->findOneBy(array('code'=>$coupon));
-                $upline = $couponn->getOwner();
+
+
+                if (null == $couponn){
+                    return new JsonResponse(["error" => 'cannot find user with this coupon'], 500);
+
+                }
+
+
             }
 
+            $upline = $couponn->getOwner();
             $user->setUpline($upline);
 
 
@@ -121,14 +130,11 @@ class ApiAffiliationController extends AbstractController
     ///////////////////////////////////////////////////////
 
     /**
-     * @Route( "/new, name="api_user_affiliation", methods={"POST"})
+     * @Route( "/new", name="api_user_affiliation_to_admin", methods={"POST"})
      * @param User $user
      * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function newToAdminAffiliation(SerializerInterface $serializer, Request $request,  UserManagerInterface $userManager,DocumentManager  $dm){
-
-
-
+    public function newToAdminAffiliation(SerializerInterface $serializer, Request $request,  UserManagerInterface $userManager,DocumentManager $dm){
 
         $data = json_decode(
             $request->getContent(),
@@ -148,8 +154,6 @@ class ApiAffiliationController extends AbstractController
         $city = $data['city'];
         $country = $data['country'];
 
-
-
         $user = new User();
         $user->setUsername($username);
         $user  ->setPlainPassword($password);
@@ -159,7 +163,6 @@ class ApiAffiliationController extends AbstractController
         $user->setSuperAdmin(false);
         $user->setCodeUser($codeuser);
         $user->setLevel('0');
-        $user->setPartnership($partnership);
         $user->setFirstname($firstname);
         $user->setLastname($lastname);
         $user->setAddress($address);
@@ -170,6 +173,10 @@ class ApiAffiliationController extends AbstractController
         if ($withcoupon == "1"){
 
             $couponn =$dm->getRepository(Coupon::class)->findOneBy(array('code'=>$coupon));
+            if (null == $couponn){
+                return new JsonResponse(["error" => 'cannot find user with this coupon'], 500);
+
+            }
             $upline = $couponn->getOwner();
         }
         if ($withcoupon == "0") {
@@ -179,7 +186,6 @@ class ApiAffiliationController extends AbstractController
         }
 
         $user->setUpline($upline);
-
 
         try {
             $userManager->updateUser($user, true);
@@ -196,10 +202,6 @@ class ApiAffiliationController extends AbstractController
         $couponObject->setOwner($user);
         $dm->persist($couponObject);
         $dm->flush();
-
-
-
-
 
         return new JsonResponse(["success" => $user->getUsername(). " has been registered!"], 200);
 

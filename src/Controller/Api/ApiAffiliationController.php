@@ -42,7 +42,6 @@ class ApiAffiliationController extends AbstractController
 
 
 
-        $upline = $dm->getRepository(User::class)->find($id);
         $data = json_decode(
             $request->getContent(),
             true
@@ -53,7 +52,6 @@ class ApiAffiliationController extends AbstractController
         $email = $data['email'];
         //$codeuser = substr(md5(time()), 0, 15);
         $coupon = $data['coupon'];
-        $withcoupon = $data['withcoupon'];
         $firstname = $data['firstname'];
         $lastname = $data['lastname'];
         $address = $data['address'];
@@ -78,20 +76,7 @@ class ApiAffiliationController extends AbstractController
             $user->setCity($city);
             $user->setCountry($country);
 
-            if ($withcoupon == "1"){
-
-
-                $couponn =$dm->getRepository(Coupon::class)->findOneBy(array('code'=>$coupon));
-
-
-                if (null == $couponn){
-                    return new JsonResponse(["error" => 'cannot find user with this coupon'], 500);
-
-                }
-
-
-            }
-
+            $couponn =$dm->getRepository(Coupon::class)->findOneBy(array('code'=>$coupon));
             $upline = $couponn->getOwner();
             $user->setUpline($upline);
 
@@ -143,7 +128,6 @@ class ApiAffiliationController extends AbstractController
         $email = $data['email'];
         //$codeuser = substr(md5(time()), 0, 15);
         $coupon = $data['coupon'];
-        $withcoupon = $data['withcoupon'];
         $firstname = $data['firstname'];
         $lastname = $data['lastname'];
         $address = $data['address'];
@@ -166,20 +150,11 @@ class ApiAffiliationController extends AbstractController
         $user->setCity($city);
         $user->setCountry($country);
 
-        if ($withcoupon == "1"){
 
-            $couponn =$dm->getRepository(Coupon::class)->findOneBy(array('code'=>$coupon));
-            if (null == $couponn){
-                return new JsonResponse(["error" => 'cannot find user with this coupon'], 500);
 
-            }
-            $upline = $couponn->getOwner();
-        }
-        if ($withcoupon == "0") {
+        $couponn =$dm->getRepository(Coupon::class)->findOneBy(array('code'=>$coupon));
+        $upline = $couponn->getOwner();
 
-            $couponn =$dm->getRepository(Coupon::class)->findOneBy(array('code'=>'BitLeadPro'));
-            $upline = $couponn->getOwner();
-        }
 
         $user->setUpline($upline);
 
@@ -202,6 +177,28 @@ class ApiAffiliationController extends AbstractController
         return new JsonResponse(["success" => $user->getUsername(). " has been registered!"], 200);
 
 
+    }
+
+    //////////////////////////////////////////////
+    ///////////  GET AFFILIATE CODE  /////////////
+    /// //////////////////////////////////////////
+
+    /**
+     * @Route( "/affiliatecode/{id}", name="api_user_affiliation_code", methods={"GET"})
+     * @param User $user
+     * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function GetAffiliateCode(Request $request,$id,DocumentManager  $dm)
+    {
+
+
+
+
+        $user = $dm->getRepository(User::class)->find($id);
+
+        $code= $user->getUsername();
+
+        return new JsonResponse($code, 200);
     }
 
 

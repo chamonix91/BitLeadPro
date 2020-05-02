@@ -29,17 +29,43 @@ class User extends BaseUser
     /**
      * @MongoDB\Field(type="string")
      */
-    protected $codeUser;
+    protected $firstname;
+
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $lastname;
+
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $address;
+
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $postalcode;
+
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $city;
+
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $country;
 
     /**
      * @MongoDB\Field(type="string")
      */
     protected $level;
 
+
     /**
-     * @MongoDB\ReferenceOne(targetDocument=Partnership::class)
+     * @MongoDB\ReferenceMany(targetDocument=Coupon::class,  mappedBy="owner",cascade={"persist"})
      */
-    public $partnership;
+    public $coupons;
 
 
     /** @MongoDB\ReferenceOne(targetDocument=User::class,  inversedBy="directs",cascade={"persist"}) */
@@ -150,6 +176,104 @@ class User extends BaseUser
     {
         $this->upline = $upline;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * @param mixed $address
+     */
+    public function setAddress($address): void
+    {
+        $this->address = $address;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCity()
+    {
+        return $this->city;
+    }
+
+    /**
+     * @param mixed $city
+     */
+    public function setCity($city): void
+    {
+        $this->city = $city;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCountry()
+    {
+        return $this->country;
+    }
+
+    /**
+     * @param mixed $country
+     */
+    public function setCountry($country): void
+    {
+        $this->country = $country;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFirstname()
+    {
+        return $this->firstname;
+    }
+
+    /**
+     * @param mixed $firstname
+     */
+    public function setFirstname($firstname): void
+    {
+        $this->firstname = $firstname;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastname()
+    {
+        return $this->lastname;
+    }
+
+    /**
+     * @param mixed $lastname
+     */
+    public function setLastname($lastname): void
+    {
+        $this->lastname = $lastname;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPostalcode()
+    {
+        return $this->postalcode;
+    }
+
+    /**
+     * @param mixed $postalcode
+     */
+    public function setPostalcode($postalcode): void
+    {
+        $this->postalcode = $postalcode;
+    }
+
+
 
 
 

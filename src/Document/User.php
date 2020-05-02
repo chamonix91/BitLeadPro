@@ -81,21 +81,6 @@ class User extends BaseUser
     }
 
 
-    /**
-     * @return mixed
-     */
-    public function getCodeUser()
-    {
-        return $this->codeUser;
-    }
-
-    /**
-     * @param mixed $codeUser
-     */
-    public function setCodeUser($codeUser): void
-    {
-        $this->codeUser = $codeUser;
-    }
 
     /**
      * @return mixed

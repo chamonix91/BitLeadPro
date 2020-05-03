@@ -52,6 +52,7 @@ class ApiAffiliationController extends AbstractController
         $email = $data['email'];
         //$codeuser = substr(md5(time()), 0, 15);
         $coupon = $data['coupon'];
+        $withcoupon = $data['withcoupon'];
         $firstname = $data['firstname'];
         $lastname = $data['lastname'];
         $address = $data['address'];
@@ -76,10 +77,21 @@ class ApiAffiliationController extends AbstractController
             $user->setCity($city);
             $user->setCountry($country);
 
+
             $couponn =$dm->getRepository(Coupon::class)->findOneBy(array('code'=>$coupon));
-            $upline = $couponn->getOwner();
+
+            if($withcoupon == "0"){
+
+                $upline = $dm->getRepository(User::class)->find($id);
+            }
+
+            if ($withcoupon == "1"){
+                $upline = $couponn->getOwner();
+            }
+
             $user->setUpline($upline);
 
+            //dump($user)
 
         try {
             $userManager->updateUser($user, true);
@@ -190,8 +202,6 @@ class ApiAffiliationController extends AbstractController
      */
     public function GetAffiliateCode(Request $request,$id,DocumentManager  $dm)
     {
-
-
 
 
         $user = $dm->getRepository(User::class)->find($id);

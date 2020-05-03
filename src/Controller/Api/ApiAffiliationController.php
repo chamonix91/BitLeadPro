@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/affiliation")
+ * @Route("/registration")
  */
 class ApiAffiliationController extends AbstractController
 {
@@ -196,7 +196,7 @@ class ApiAffiliationController extends AbstractController
     /// //////////////////////////////////////////
 
     /**
-     * @Route( "/affiliatecode/{id}", name="api_user_affiliation_code", methods={"GET"})
+     * @Route( "/getcodeupline/{id}", name="api_user_affiliation_code", methods={"GET"})
      * @param User $user
      * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */

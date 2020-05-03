@@ -44,7 +44,7 @@ security:
             anonymous: true
 
         api_affiliation:
-            pattern:  ^/api/affiliation
+            pattern:  ^/api/registration
             stateless: true
             anonymous: true
         api:

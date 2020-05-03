@@ -10,6 +10,7 @@ namespace App\Service;
 
 use App\Document\User;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class MlmService
@@ -19,10 +20,15 @@ class MlmService
     ///  get all directs ////
     /////////////////////////
 
-    public function AllDirects( SerializerInterface $serializer, User $user )
+    public function AllDirects( SerializerInterface $serializer, User $user, PersistentCollection $directs )
     {
 
         $directs = $user->getDirects();
+        $tab = array();
+
+        foreach ($directs as $direct){
+            array_push($tab, $direct->getUsername());
+        }
 
 
         /*$jsonObject = $serializer->serialize($directs, 'json', [
@@ -33,7 +39,7 @@ class MlmService
 
 
 
-        return $directs;
+        return $tab;
 
 
     }

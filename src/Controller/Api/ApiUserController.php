@@ -71,12 +71,21 @@ class ApiUserController extends AbstractController
     public function getloggedtUser(Request $request, UserManagerInterface $userManager)
     {
 
+        $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers, $encoders);
 
         $user = $this->getUser();
 
+        $jsonObject = $serializer->serialize($user, 'json', [
+            'circular_reference_handler' => function ($object) {
+                return $object->getId();
+            }
+        ]);
 
 
-        return new JsonResponse($this->serialize($user), 200);
+
+        return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
     }
 
 

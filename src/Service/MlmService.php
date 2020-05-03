@@ -23,12 +23,12 @@ class MlmService
     public function AllDirects( SerializerInterface $serializer, User $user, PersistentCollection $directs )
     {
 
-        $directs = $user->getDirects();
+        /*$directs = $user->getDirects();
         $tab = array();
 
         foreach ($directs as $direct){
             array_push($tab, $direct->getUsername());
-        }
+        }*/
 
 
         /*$jsonObject = $serializer->serialize($directs, 'json', [
@@ -39,7 +39,7 @@ class MlmService
 
 
 
-        return $tab;
+        //return $tab;
 
 
     }
@@ -51,7 +51,7 @@ class MlmService
     public function getmyDirects( Array $tab, User $user )
     {
 
-        foreach ($directs as $direct) {
+        /*foreach ($directs as $direct) {
             $tabdir = array();
             $ds = $MlmService->AllDirects($serializer, $direct);
             foreach ($ds as $d ){
@@ -64,7 +64,7 @@ class MlmService
 
 
 
-        return $directs;
+        return $directs;*/
 
 
     }

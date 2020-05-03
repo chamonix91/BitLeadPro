@@ -31,7 +31,7 @@ class ApiMlmController extends AbstractController
      */
     public function myMyMLM (MlmService $MlmService,Request $request,DocumentManager  $dm, $id, SerializerInterface $serializer, User $user){
         
-        $user = $dm->getRepository(User::class)->find($id);
+        /*$user = $dm->getRepository(User::class)->find($id);
 
         $directs = $user->getDirects();
 
@@ -62,7 +62,7 @@ class ApiMlmController extends AbstractController
 
 
 
-        return $response = new Response ($directs, Response::HTTP_OK);
+        return $response = new Response ($directs, Response::HTTP_OK);*/
 
 
     }

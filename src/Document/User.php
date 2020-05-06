@@ -9,6 +9,7 @@
 namespace App\Document;
 use Doctrine\Common\Collections\ArrayCollection;
 use FOS\UserBundle\Model\User as BaseUser;
+use JMS\Serializer\Annotation\Groups;
 
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
@@ -60,6 +61,31 @@ class User extends BaseUser
      * @MongoDB\Field(type="string")
      */
     protected $level;
+
+    /**
+     * @MongoDB\Field(type="timestamp")
+     */
+    protected $birthday;
+
+    /**
+     * @MongoDB\Field(type="timestamp")
+     */
+    protected $created_date;
+
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $tel;
+
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $gender;
+
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $image;
 
 
     /**
@@ -254,6 +280,86 @@ class User extends BaseUser
     public function setUpline($upline): void
     {
         $this->upline = $upline;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBirthday()
+    {
+        return $this->birthday;
+    }
+
+    /**
+     * @param mixed $birthday
+     */
+    public function setBirthday($birthday): void
+    {
+        $this->birthday = $birthday;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreatedDate()
+    {
+        return $this->created_date;
+    }
+
+    /**
+     * @param mixed $created_date
+     */
+    public function setCreatedDate($created_date): void
+    {
+        $this->created_date = $created_date;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGender()
+    {
+        return $this->gender;
+    }
+
+    /**
+     * @param mixed $gender
+     */
+    public function setGender($gender): void
+    {
+        $this->gender = $gender;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param mixed $image
+     */
+    public function setImage($image): void
+    {
+        $this->image = $image;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTel()
+    {
+        return $this->tel;
+    }
+
+    /**
+     * @param mixed $tel
+     */
+    public function setTel($tel): void
+    {
+        $this->tel = $tel;
     }
 
 

@@ -9,6 +9,7 @@
 namespace App\Controller\Api;
 
 use App\Document\User;
+use App\Service\UserService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\UserBundle\Model\UserManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,6 +22,10 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+
+
+use JMS\Serializer\SerializationContext;
 /**
  * @Route("/user")
  */
@@ -37,38 +42,40 @@ class ApiUserController extends AbstractController
      * @param User $user
      * @return JsonResponse
      */
-    public function detail(Request $request,$id,DocumentManager  $dm)
+    public function detail(Request $request,$id,DocumentManager  $dm, UserService $userservice)
     {
 
+        $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers, $encoders);
+
         $user = new User() ;
-        //$this->denyAccessUnlessGranted('view', $user);
+
         $user = $dm->getRepository(User::class)->find($id);
+        
+        $userdetail = $userservice->GetOneUser( $serializer, $user);
 
-        $directs = $user->getDirects();
-        $c = count($directs);
-        dump($c);die();
-
-        return new JsonResponse($this->serialize($user), 200);
+        return new Response($userdetail, 200, ['Content-Type' => 'application/json']);
     }
-    protected function serialize(User $user)
+    /*protected function serialize(User $user)
     {
         $encoders = [new XmlEncoder(), new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
         $serializer = new Serializer($normalizers, $encoders);
         $json = $serializer->serialize($user, 'json');
         return $json;
-    }
+    }*/
 
     //////////////////////////////////////////////
     ///////////  GET CURRENT USER  ///////////////
     /// //////////////////////////////////////////
 
     /**
-     * @Route("/current", name="api_user_detail", methods={"GET"})
+     * @Route("/current", name="api_user_current", methods={"GET"})
      * @param User $user
      * @return JsonResponse
      */
-    public function getloggedtUser(Request $request, UserManagerInterface $userManager)
+    public function getloggedtUser(Request $request, UserManagerInterface $userManager, UserService $userservice)
     {
 
         $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
@@ -77,15 +84,67 @@ class ApiUserController extends AbstractController
 
         $user = $this->getUser();
 
-        $jsonObject = $serializer->serialize($user, 'json', [
+        $current = $userservice->GetOneUser( $serializer, $user);
+
+        return new Response($current, 200, ['Content-Type' => 'application/json']);
+    }
+
+
+    //////////////////////////////////////////////
+    ///////////  MY ALL DIRECTS    ///////////////
+    /// //////////////////////////////////////////
+
+    /**
+     * @Route("/myalldirects", name="api_user_mysirects", methods={"GET"})
+     * @param User $user
+     * @return JsonResponse
+     */
+    public function getmyalldirectsUser(Request $request, UserManagerInterface $userManager)
+    {
+
+        $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers, $encoders);
+
+        $user = $this->getUser();
+        //$myuser = (get_class($user));
+
+        $directs = $user->getDirects();
+
+
+
+        $jsonObject = $serializer->serialize($directs, 'json', [
             'circular_reference_handler' => function ($object) {
                 return $object->getId();
             }
-        ]);
+        ],[AbstractNormalizer::IGNORED_ATTRIBUTES => ['firstname']]);
 
 
 
         return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
+    }
+
+
+    //////////////////////////////////////////////
+    ///////////   GET ALL USERS    ///////////////
+    /// //////////////////////////////////////////
+
+    /**
+     * @Route("/allusers", name="api_user_getall", methods={"GET"})
+     * @param User $user
+     * @return JsonResponse
+     */
+    public function getAllUser(Request $request, UserManagerInterface $userManager, DocumentManager  $dm, UserService $userservice)
+    {
+
+        $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers, $encoders);
+
+        $users = $userservice->getAllUsers( $serializer, $dm);
+
+
+        return new Response($users, 200, ['Content-Type' => 'application/json']);
     }
 
 

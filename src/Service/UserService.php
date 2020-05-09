@@ -39,8 +39,11 @@ class UserService
                 'lastname' => $user->getlastname(),
                 'address' => $user->getaddress(),
                 'postalcode' => $user->getpostalcode(),
+                'tel' => $user->gettel(),
+                'gender' => $user->getgender(),
                 'city' => $user->getcity(),
                 'country' => $user->getcountry(),
+                'image' => $user->getimage(),
                 'level' => $user->getlevel(),
                 'birthday' => $user->getbirthday(),
                 'username' => $user->getUsername(),
@@ -65,19 +68,16 @@ class UserService
     }
 
     //////////////////////////
-    //////   ALL USERS  //////
+    //////  GET ONE USER /////
     //////////////////////////
 
     /**
      * @param SerializerInterface $serializer
-     * @param DocumentManager $dm
+     * @param User $user
      * @return string
      */
     public function GetOneUser(SerializerInterface $serializer, User $user )
     {
-
-
-
 
             $formatted[] = [
                 'id' => $user->getId(),
@@ -85,9 +85,12 @@ class UserService
                 'email' => $user->getEmail(),
                 'lastname' => $user->getlastname(),
                 'address' => $user->getaddress(),
+                'tel' => $user->gettel(),
+                'gender' => $user->getgender(),
                 'postalcode' => $user->getpostalcode(),
                 'city' => $user->getcity(),
                 'country' => $user->getcountry(),
+                'image' => $user->getimage(),
                 'level' => $user->getlevel(),
                 'birthday' => $user->getbirthday(),
                 'username' => $user->getUsername(),

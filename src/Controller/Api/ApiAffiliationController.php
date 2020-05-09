@@ -22,6 +22,8 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mailer\MailerInterface;
 
 /**
  * @Route("/registration")
@@ -203,13 +205,12 @@ class ApiAffiliationController extends AbstractController
     public function GetAffiliateCode(Request $request,$id,DocumentManager  $dm)
     {
 
-
         $user = $dm->getRepository(User::class)->find($id);
-
         $code= $user->getUsername();
-
         return new JsonResponse($code, 200);
     }
+
+
 
 
 

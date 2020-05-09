@@ -20,26 +20,27 @@ class MlmService
     ///  get all directs ////
     /////////////////////////
 
-    public function AllDirects( SerializerInterface $serializer, User $user, PersistentCollection $directs )
+    public function AllDirects(SerializerInterface $serializer, User $user, PersistentCollection $directs)
     {
 
-        /*$directs = $user->getDirects();
+        $directs = $user->getDirects();
         $tab = array();
 
-        foreach ($directs as $direct){
-            array_push($tab, $direct->getUsername());
-        }*/
+        foreach ($directs as $direct) {
 
+            $formatted[] = [
+                'label' => $direct->getUsername(),
+                'children' => $direct->getId()
 
-        /*$jsonObject = $serializer->serialize($directs, 'json', [
+            ];
+        }
+        $jsonObject = $serializer->serialize($formatted, 'json', [
             'circular_reference_handler' => function ($object) {
                 return $object;
             }
-        ]);*/
+        ]);
 
-
-
-        //return $tab;
+        return $formatted;
 
 
     }
@@ -48,23 +49,90 @@ class MlmService
     ////  get my directs ////
     /////////////////////////
 
-    public function getmyDirects( Array $tab, User $user )
+    public function getmyDirects(SerializerInterface $serializer, PersistentCollection $directs)
     {
 
-        /*foreach ($directs as $direct) {
-            $tabdir = array();
-            $ds = $MlmService->AllDirects($serializer, $direct);
-            foreach ($ds as $d ){
-                array_push($tabdir, $d->getUsername());
+        foreach ($directs as $direct) {
+
+            $tab = array();
+            $ds1 = $direct->getDirects();
+
+
+            foreach ($ds1 as $d1) {
+                array_push($tab, $d1->getUsername());
+                $ds2 = $direct->getDirects();
+                $tab1 = array();
+
+                foreach($ds2 as $d2){
+                    array_push($tab1, $d2->getUsername());
+                    $ds3 = $d2->getDirects();
+                    $tab2 = array();
+
+                    foreach($ds3 as $d3){
+                        array_push($tab2, $d3->getUsername());
+                    }
+
+
+
+                    $treeArray2[] = [
+                        'label' => $d2->getUsername(),
+                        'children'=>$tab2
+                    ];
+                    //dump($treeArray2);
+                }
+                //die();
+
+                $treeArray1[] = [
+                    'label' => $d1->getUsername(),
+                    'children'=>$tab1
+                ];
             }
-            array_push($tab, $tabdir);
-
-
+            $treeArray[] = [
+                'label' => $direct->getUsername(),
+                'children'=> $tab
+            ];
         }
 
 
+        $jsonObject = $serializer->serialize($treeArray, 'json', [
+            'circular_reference_handler' => function ($object) {
+                return $object;
+            }
+        ]);
 
-        return $directs;*/
+
+
+
+
+        return $jsonObject;
+
+
+    }
+
+    /////////////////////////
+    ////   CREATE MLM    ////
+    /////////////////////////
+
+    public function CreateMlm(SerializerInterface $serializer, User $user, PersistentCollection $directs)
+    {
+
+        $directs = $user->getDirects();
+        $tab = array();
+
+        foreach ($directs as $direct) {
+
+            $formatted[] = [
+                'label' => $direct->getUsername(),
+                'children' => $direct->getId()
+            ];
+        }
+        $jsonObject = $serializer->serialize($formatted, 'json', [
+            'circular_reference_handler' => function ($object) {
+                return $object;
+            }
+        ]);
+
+        return $formatted;
 
 
     }

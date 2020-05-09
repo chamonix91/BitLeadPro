@@ -29,40 +29,27 @@ class ApiMlmController extends AbstractController
      * @param User $user
      * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function myMyMLM (MlmService $MlmService,Request $request,DocumentManager  $dm, $id, SerializerInterface $serializer, User $user){
-        
-        /*$user = $dm->getRepository(User::class)->find($id);
+    public function myMyMLM(MlmService $MlmService, Request $request, DocumentManager $dm, $id, SerializerInterface $serializer, User $user)
+    {
 
+        $user = $dm->getRepository(User::class)->find($id);
         $directs = $user->getDirects();
 
-        $dir= $MlmService->AllDirects($serializer, $user, $directs);
-        $tab = array();
-
-        foreach ($directs as $direct) {
-
-            dump($direct->getUsername());
-
-            array_push($tab, $direct->getUsername());
-            $directs= $MlmService->AllDirects($serializer, $direct, $directs);
+        
+            $tree = $MlmService->getmyDirects($serializer, $directs);
 
 
 
 
-
-
-        }
-
-
-        //dump($tab);
-        die();
-
+            $jsonObject = $serializer->serialize($tree, 'json', [
+                'circular_reference_handler' => function ($object) {
+                    return $object;
+                }
+            ]);
 
 
 
-
-
-
-        return $response = new Response ($directs, Response::HTTP_OK);*/
+        return new Response($tree, 200, ['Content-Type' => 'application/json']);
 
 
     }

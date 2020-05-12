@@ -158,7 +158,7 @@ class ApiAffiliationController extends AbstractController
         $user->setUsername($username);
         $user ->setPlainPassword($password);
         $user->setEmail($email);
-        $user->setEnabled(true);
+        $user->setEnabled(false);
         $user->setRoles(array('ROLE_USER'));
         $user->setSuperAdmin(false);
         $user->setLevel('0');

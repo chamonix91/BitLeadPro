@@ -72,8 +72,6 @@ class MlmService
                         array_push($tab2, $d3->getUsername());
                     }
 
-
-
                     $treeArray2[] = [
                         'label' => $d2->getUsername(),
                         'children'=>$tab2
@@ -84,12 +82,12 @@ class MlmService
 
                 $treeArray1[] = [
                     'label' => $d1->getUsername(),
-                    'children'=>$tab1
+                    'children'=>$treeArray2
                 ];
             }
             $treeArray[] = [
                 'label' => $direct->getUsername(),
-                'children'=> $tab
+                'children'=> $treeArray1
             ];
         }
 

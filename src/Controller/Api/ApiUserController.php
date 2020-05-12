@@ -12,6 +12,8 @@ use App\Document\User;
 
 use App\Service\UserService;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use FOS\RestBundle\Controller\Annotations\View;
+use FOS\RestBundle\Controller\FOSRestController;
 use FOS\UserBundle\Model\UserManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,20 +27,23 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
+use FOS\RestBundle\Controller\Annotations as Rest;
+
 
 use JMS\Serializer\SerializationContext;
 /**
  * @Route("/user")
  */
-class ApiUserController extends AbstractController
+class ApiUserController extends FOSRestController
 {
-
 
 
     /**
      * @Route("/current", name="api__logged_user", methods={"GET"})
-     * @param User $user
-     * @return JsonResponse
+     * @param Request $request
+     * @param UserManagerInterface $userManager
+     * @param UserService $userservice
+     * @return array* @Rest\View()
      */
     public function getcurrenttUser(Request $request, UserManagerInterface $userManager, UserService $userservice)
     {
@@ -49,7 +54,6 @@ class ApiUserController extends AbstractController
 
 
         $user = $this->getUser();
-
 
 
         $formatted[] = [
@@ -70,15 +74,12 @@ class ApiUserController extends AbstractController
             'created_date' => $user->getCreatedDate(),
             'role'=> $user->getRoles()
         ];
-        $current= $serializer->serialize(
-            $formatted,
-            'json',[
-                'circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }
-            ]
-        );
-        return new Response($current, 200, ['Content-Type' => 'application/json']);
+
+        //return new Response($current, 200, ['Content-Type' => 'application/json']);
+        //$statusCode = 200;
+
+        //$view = $this->view($formatted, $statusCode);
+        return $formatted;
     }
 
 
@@ -148,8 +149,11 @@ class ApiUserController extends AbstractController
 
     /**
      * @Route("/profile", name="api_user_profile", methods={"GET"})
-     * @param User $user
-     * @return JsonResponse
+     * @param Request $request
+     * @param UserManagerInterface $userManager
+     * @param DocumentManager $dm
+     * @param UserService $userservice
+     * @return string * @Rest\View()
      */
     public function getprofile(Request $request, UserManagerInterface $userManager, DocumentManager  $dm, UserService $userservice)
     {
@@ -162,7 +166,10 @@ class ApiUserController extends AbstractController
 
         $user = $userservice->GetOneUser( $serializer, $currentuser);
 
-        return new Response($user, 200, ['Content-Type' => 'application/json']);
+        $statusCode = 200;
+
+        $view = $this->view($user, $statusCode);
+        return $this->handleView($view);
 
     }
 
@@ -174,8 +181,11 @@ class ApiUserController extends AbstractController
 
     /**
      * @Route("/{id}", name="api_user_by_id", methods={"GET"})
-     * @param User $user
-     * @return JsonResponse
+     * @param Request $request
+     * @param $id
+     * @param DocumentManager $dm
+     * @param UserService $userservice
+     * @return Response
      */
     public function detail(Request $request,$id,DocumentManager  $dm, UserService $userservice)
     {
@@ -196,8 +206,39 @@ class ApiUserController extends AbstractController
 
 
 
-        return new Response($userdetail, 200, ['Content-Type' => 'application/json']);
+        $statusCode = 200;
+
+        $view = $this->view($userdetail, $statusCode);
+        return $this->handleView($view);
     }
+
+
+    //////////////////////////////////////////////
+    ///////////    UPDATE USER      //////////////
+    /// //////////////////////////////////////////
+
+
+    /**
+     * Replaces Article resource
+     * @Rest\Put("/update/{id}")
+     * @param int $id
+     * @param Request $request
+     * @return
+     */
+    public function putArticle(int $id, Request $request,DocumentManager $dm)
+    {
+        $user = $dm->getRepository(User::class)->find($id);
+        if ($user) {
+            $user->setFirstname($request->get('firstname'));
+            $user->setLastname($request->get('lastname'));
+            $user->setAddress($request->get('address'));
+            $user->setPostalcode($request->get('postalcode'));
+            $user->setCity($request->get('city'));
+            $user->setCountry($request->get('country'));
+
+        }
+        // In case our PUT was a success we need to return a 200 HTTP OK response with the object as a result of PUT
+        return new JsonResponse(["success" => $user->getUsername(). " has been registered!"], 200);    }
 
 
 

@@ -17,4 +17,6 @@ return [
     FOS\RestBundle\FOSRestBundle::class => ['all' => true],
     Nelmio\CorsBundle\NelmioCorsBundle::class => ['all' => true],
     FOS\UserBundle\FOSUserBundle::class => ['all' => true],
+    Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class => ['all' => true],
+    Fresh\VichUploaderSerializationBundle\FreshVichUploaderSerializationBundle::class => ['all' => true],
 ];

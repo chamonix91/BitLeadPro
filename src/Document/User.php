@@ -9,10 +9,10 @@
 namespace App\Document;
 use Doctrine\Common\Collections\ArrayCollection;
 use FOS\UserBundle\Model\User as BaseUser;
-use JMS\Serializer\Annotation\Groups;
 
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Symfony\Component\HttpFoundation\File\File;
 
 
 /**
@@ -85,7 +85,7 @@ class User extends BaseUser
     /**
      * @MongoDB\Field(type="string")
      */
-    protected $image;
+    private $photoName;
 
 
     /**
@@ -333,18 +333,22 @@ class User extends BaseUser
     /**
      * @return mixed
      */
-    public function getImage()
+    public function getPhotoName()
     {
-        return $this->image;
+        return $this->photoName;
     }
 
     /**
-     * @param mixed $image
+     * @param mixed $photoName
      */
-    public function setImage($image): void
+    public function setPhotoName($photoName): void
     {
-        $this->image = $image;
+        $this->photoName = $photoName;
     }
+
+
+
+
 
     /**
      * @return mixed
@@ -361,6 +365,7 @@ class User extends BaseUser
     {
         $this->tel = $tel;
     }
+
 
 
 

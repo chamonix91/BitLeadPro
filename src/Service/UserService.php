@@ -10,6 +10,7 @@ namespace App\Service;
 
 use App\Document\User;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
@@ -43,7 +44,7 @@ class UserService
                 'gender' => $user->getgender(),
                 'city' => $user->getcity(),
                 'country' => $user->getcountry(),
-                'image' => $user->getimage(),
+                'image'=> $user->getPhotoName(),
                 'level' => $user->getlevel(),
                 'birthday' => $user->getbirthday(),
                 'username' => $user->getUsername(),
@@ -74,12 +75,12 @@ class UserService
     /**
      * @param SerializerInterface $serializer
      * @param User $user
-     * @return string
+     * @return array
      */
     public function GetOneUser(SerializerInterface $serializer, User $user )
     {
 
-            $formatted[] = [
+            $formatted = [
                 'id' => $user->getId(),
                 'firstname' => $user->getfirstname(),
                 'email' => $user->getEmail(),
@@ -90,27 +91,31 @@ class UserService
                 'postalcode' => $user->getpostalcode(),
                 'city' => $user->getcity(),
                 'country' => $user->getcountry(),
-                'image' => $user->getimage(),
                 'level' => $user->getlevel(),
                 'birthday' => $user->getbirthday(),
                 'username' => $user->getUsername(),
                 'created_date' => $user->getCreatedDate(),
-                'role'=> $user->getRoles()
+                'lastLogin' => $user->getlastLogin(),
+                'role'=> $user->getRoles(),
+                'image'=> $user->getPhotoName()
+
             ];
 
 
 
-        $user= $serializer->serialize(
+        /*$user= $serializer->serialize(
             $formatted,
             'json',[
                 'circular_reference_handler' => function ($object) {
                     return $object->getId();
                 }
             ]
-        );
+        );*/
 
 
-        return $user;
+
+
+        return $formatted ;
 
     }
 

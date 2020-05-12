@@ -28,6 +28,7 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
+
         api_login:
             pattern:  ^/api/auth/login
             stateless: true

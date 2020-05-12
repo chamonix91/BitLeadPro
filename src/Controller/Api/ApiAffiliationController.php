@@ -61,6 +61,7 @@ class ApiAffiliationController extends AbstractController
         $postalcode = $data['postalcode'];
         $city = $data['city'];
         $country = $data['country'];
+        $image = $data['image'];
 
 
 
@@ -77,7 +78,9 @@ class ApiAffiliationController extends AbstractController
             $user->setAddress($address);
             $user->setPostalcode($postalcode);
             $user->setCity($city);
+            $user->setPhotoName($image);
             $user->setCountry($country);
+            $user->setPhotoName($image);
 
 
             $couponn =$dm->getRepository(Coupon::class)->findOneBy(array('code'=>$coupon));
@@ -148,10 +151,12 @@ class ApiAffiliationController extends AbstractController
         $postalcode = $data['postalcode'];
         $city = $data['city'];
         $country = $data['country'];
+        $image = $data['image'];
+
 
         $user = new User();
         $user->setUsername($username);
-        $user  ->setPlainPassword($password);
+        $user ->setPlainPassword($password);
         $user->setEmail($email);
         $user->setEnabled(true);
         $user->setRoles(array('ROLE_USER'));
@@ -163,6 +168,7 @@ class ApiAffiliationController extends AbstractController
         $user->setPostalcode($postalcode);
         $user->setCity($city);
         $user->setCountry($country);
+        $user->setPhotoName($image);
 
 
 
@@ -212,6 +218,42 @@ class ApiAffiliationController extends AbstractController
 
 
 
+    //////////////////////////////////////////////
+    ///////////   FORGOT PASSWORD  ///////////////
+    /// //////////////////////////////////////////
+
+    /**
+     * @Route("/forgotpwd", name="api_user_forgotpwd", methods={"POST"})
+     * @param User $user
+     * @return JsonResponse
+     */
+    public function forgottenPassword(Request $request, UserManagerInterface $userManager, DocumentManager  $dm, \Swift_Mailer $mailer)
+    {
+
+        $data = json_decode(
+            $request->getContent(),
+            true
+        );
+        $user_email = $data['email'];
+        $user =$dm->getRepository(User::class)->findOneBy(array('email'=>$user_email));
+
+
+
+        if ($user == null){
+
+            return new JsonResponse(["this email does not exist!"], 404);
+        }
+
+        $message = (new \Swift_Message('Recovering Password From BitLeadPro.Com'))
+            ->setFrom('dreamlifedev@gmail.com')
+            ->setTo('chamseddine.bezzaouia@gmail.com')
+            ->setBody('<p>Your New Password Is Orama123</p>'
+            );
+
+        $mailer->send($message);
+
+        return new JsonResponse(["success.Your email has been send!"], 200);
+    }
 
 
 

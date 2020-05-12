@@ -43,7 +43,7 @@ class ApiUserController extends FOSRestController
      * @param Request $request
      * @param UserManagerInterface $userManager
      * @param UserService $userservice
-     * @return array* @Rest\View()
+     * @return Response
      */
     public function getcurrenttUser(Request $request, UserManagerInterface $userManager, UserService $userservice)
     {
@@ -52,34 +52,14 @@ class ApiUserController extends FOSRestController
         $normalizers = [new ObjectNormalizer()];
         $serializer = new Serializer($normalizers, $encoders);
 
+        $currentuser = $this->getUser();
 
-        $user = $this->getUser();
+        $user = $userservice->GetOneUser( $serializer, $currentuser);
 
+        $statusCode = 200;
 
-        $formatted[] = [
-            'id' => $user->getId(),
-            'firstname' => $user->getfirstname(),
-            'email' => $user->getEmail(),
-            'lastname' => $user->getlastname(),
-            'address' => $user->getaddress(),
-            'tel' => $user->gettel(),
-            'gender' => $user->getgender(),
-            'postalcode' => $user->getpostalcode(),
-            'city' => $user->getcity(),
-            'country' => $user->getcountry(),
-            'image' => $user->getimage(),
-            'level' => $user->getlevel(),
-            'birthday' => $user->getbirthday(),
-            'username' => $user->getUsername(),
-            'created_date' => $user->getCreatedDate(),
-            'role'=> $user->getRoles()
-        ];
-
-        //return new Response($current, 200, ['Content-Type' => 'application/json']);
-        //$statusCode = 200;
-
-        //$view = $this->view($formatted, $statusCode);
-        return $formatted;
+        $view = $this->view($user, $statusCode);
+        return $this->handleView($view);
     }
 
 

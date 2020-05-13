@@ -175,17 +175,10 @@ class ApiUserController extends FOSRestController
         $serializer = new Serializer($normalizers, $encoders);
 
 
-
         $user = $dm->getRepository(User::class)->find($id);
 
         $userdetail = $userservice->GetOneUser($serializer, $user);
         //dump($user);die();
-
-
-
-
-
-
         $statusCode = 200;
 
         $view = $this->view($userdetail, $statusCode);
@@ -203,22 +196,44 @@ class ApiUserController extends FOSRestController
      * @Rest\Put("/update/{id}")
      * @param int $id
      * @param Request $request
-     * @return
+     * @param DocumentManager $dm
+     * @return JsonResponse
+     * @throws \Doctrine\ODM\MongoDB\LockException
      */
-    public function putArticle(int $id, Request $request,DocumentManager $dm)
+    public function putUser($id, Request $request,DocumentManager $dm)
     {
+
+        $data = json_decode(
+            $request->getContent(),
+            true
+        );
+
+
+        $firstname = $data['firstname'];
+        $lastname = $data['lastname'];
+        $address = $data['address'];
+        $postalcode = $data['postalcode'];
+        $city = $data['city'];
+        $image = $data['image'];
+        $country = $data['country'];
+
+
+
         $user = $dm->getRepository(User::class)->find($id);
         if ($user) {
-            $user->setFirstname($request->get('firstname'));
-            $user->setLastname($request->get('lastname'));
-            $user->setAddress($request->get('address'));
-            $user->setPostalcode($request->get('postalcode'));
-            $user->setCity($request->get('city'));
-            $user->setCountry($request->get('country'));
+            $user->setFirstname($firstname);
+            $user->setLastname($lastname);
+            $user->setAddress($address);
+            $user->setPostalcode($postalcode);
+            $user->setCity($city);
+            $user->setCountry($country);
+            $user->setPhotoName($image);
+            $dm->merge($user);
+            $dm->flush();
 
         }
         // In case our PUT was a success we need to return a 200 HTTP OK response with the object as a result of PUT
-        return new JsonResponse(["success" => $user->getUsername(). " has been registered!"], 200);    }
+        return new JsonResponse(["success" => $user->getUsername(). " has been updated!"], 200);    }
 
 
 

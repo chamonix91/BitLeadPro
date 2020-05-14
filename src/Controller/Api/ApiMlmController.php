@@ -41,12 +41,6 @@ class ApiMlmController extends AbstractController
 
 
 
-            $jsonObject = $serializer->serialize($tree, 'json', [
-                'circular_reference_handler' => function ($object) {
-                    return $object;
-                }
-            ]);
-
 
 
         return new Response($tree, 200, ['Content-Type' => 'application/json']);

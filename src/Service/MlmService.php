@@ -52,11 +52,27 @@ class MlmService
     public function getmyDirects(SerializerInterface $serializer, PersistentCollection $directs)
     {
 
-        foreach ($directs as $direct) {
+
+        $treeArray = array();
+        foreach ($directs as $direct){
+
+            $ds = $direct->getDirects();
+
+            $treeArray[] = [
+                "label" => $direct->getUsername(),
+                "children" => $this->getmyDirects($serializer,$ds)
+            ];
+        }
+
+
+
+        return $treeArray();
+
+
+        /*foreach ($directs as $direct) {
 
             $tab = array();
             $ds1 = $direct->getDirects();
-
 
             foreach ($ds1 as $d1) {
                 array_push($tab, $d1->getUsername());
@@ -89,20 +105,14 @@ class MlmService
                 'label' => $direct->getUsername(),
                 'children'=> $treeArray1
             ];
-        }
-
-
-        $jsonObject = $serializer->serialize($treeArray, 'json', [
-            'circular_reference_handler' => function ($object) {
-                return $object;
-            }
-        ]);
+        }*/
 
 
 
 
 
-        return $jsonObject;
+
+
 
 
     }

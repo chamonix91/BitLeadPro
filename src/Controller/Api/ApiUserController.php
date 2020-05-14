@@ -10,6 +10,7 @@ namespace App\Controller\Api;
 
 use App\Document\User;
 
+use App\Service\FileUploader;
 use App\Service\UserService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\RestBundle\Controller\Annotations\View;
@@ -236,7 +237,21 @@ class ApiUserController extends FOSRestController
         return new JsonResponse(["success" => $user->getUsername(). " has been updated!"], 200);    }
 
 
+    /**
+     * @Rest\Post("/up")
+     * @param Request $request
+     * @Rest\View()
+     * @return string
+     */
+    public function upAction(Request $request){
+        $file = $request->files->get('File');
+        $a = new FileUploader($this->getParameter('brochures_directory'));
+        $fileName = md5(uniqid()).'.'.$file->guessExtension();
+        $file->move($this->getParameter('brochures_directory'), $fileName);
+        return $fileName;
 
+        //$a->upload($file);
+    }
 
 
 }

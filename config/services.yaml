@@ -7,6 +7,9 @@ parameters:
 #    env(MONGODB_URL): 'mongodb://localhost:27017'
 #    env(MONGODB_DB): 'OpenMarketMLM'
     mongodb_server: "mongodb://localhost:27017"
+    locale: en
+    brochures_directory: '%kernel.project_dir%/web/upload'
+
 
 services:
     # default configuration for services in *this* file

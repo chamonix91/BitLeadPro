@@ -217,6 +217,8 @@ class ApiUserController extends FOSRestController
         $city = $data['city'];
         $image = $data['image'];
         $country = $data['country'];
+        $birthday= strtotime(substr($data['birthday'],0,24));
+
 
 
 
@@ -229,6 +231,7 @@ class ApiUserController extends FOSRestController
             $user->setCity($city);
             $user->setCountry($country);
             $user->setPhotoName($image);
+            $user->setBirthday($birthday);
             $dm->merge($user);
             $dm->flush();
 

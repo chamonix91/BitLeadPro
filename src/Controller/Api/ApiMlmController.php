@@ -39,7 +39,11 @@ class ApiMlmController extends AbstractController
             $tree = $MlmService->getmyDirects($serializer, $directs);
 
 
-
+            $jsonObject = $serializer->serialize($tree, 'json', [
+                'circular_reference_handler' => function ($object) {
+                    return $object;
+                }
+            ]);
 
 
 

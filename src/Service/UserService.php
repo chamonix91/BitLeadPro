@@ -83,8 +83,12 @@ class UserService
     {
 
         $birthday = $user->getBirthday();
+        if($birthday){
         $birthday_date = date("m-d-Y", $birthday->sec);
-
+        }
+        else {
+            $birthday_date = null;
+        }
             $formatted = [
                 'id' => $user->getId(),
                 'firstname' => $user->getfirstname(),

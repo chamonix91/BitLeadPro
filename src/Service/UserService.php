@@ -32,6 +32,8 @@ class UserService
 
         foreach ($users as $user){
 
+            $birthday = $user->getBirthday();
+            $birthday_date = date("m-d-Y", $birthday->sec);
 
             $formatted[] = [
                 'id' => $user->getId(),
@@ -46,7 +48,7 @@ class UserService
                 'country' => $user->getcountry(),
                 'image'=> $user->getPhotoName(),
                 'level' => $user->getlevel(),
-                'birthday' => $user->getbirthday(),
+                'birthday' => $birthday_date,
                 'username' => $user->getUsername(),
                 'created_date' => $user->getCreatedDate(),
                 'role'=> $user->getRoles()
@@ -80,6 +82,9 @@ class UserService
     public function GetOneUser(SerializerInterface $serializer, User $user )
     {
 
+        $birthday = $user->getBirthday();
+        $birthday_date = date("m-d-Y", $birthday->sec);
+
             $formatted = [
                 'id' => $user->getId(),
                 'firstname' => $user->getfirstname(),
@@ -92,7 +97,7 @@ class UserService
                 'city' => $user->getcity(),
                 'country' => $user->getcountry(),
                 'level' => $user->getlevel(),
-                'birthday' => $user->getbirthday(),
+                'birthday' => $birthday_date,
                 'username' => $user->getUsername(),
                 'created_date' => $user->getCreatedDate(),
                 'lastLogin' => $user->getlastLogin(),

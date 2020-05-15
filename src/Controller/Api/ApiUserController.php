@@ -232,7 +232,7 @@ class ApiUserController extends FOSRestController
             $user->setPostalcode($postalcode);
             $user->setCity($city);
             $user->setCountry($country);
-            $user->setCountry($tel);
+            $user->setTel($tel);
             $user->setPhotoName($image);
             $user->setBirthday($birthday);
             $user->setGender($gender);

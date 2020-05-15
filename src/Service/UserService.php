@@ -107,7 +107,6 @@ class UserService
                 'lastLogin' => $user->getlastLogin(),
                 'role'=> $user->getRoles(),
                 'image'=> $user->getPhotoName()
-
             ];
 
 

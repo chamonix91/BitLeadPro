@@ -217,6 +217,8 @@ class ApiUserController extends FOSRestController
         $city = $data['city'];
         $image = $data['image'];
         $country = $data['country'];
+        $tel = $data['tel'];
+        $gender = $data['gender'];
         $birthday= strtotime(substr($data['birthday'],0,24));
 
 
@@ -230,8 +232,10 @@ class ApiUserController extends FOSRestController
             $user->setPostalcode($postalcode);
             $user->setCity($city);
             $user->setCountry($country);
+            $user->setCountry($tel);
             $user->setPhotoName($image);
             $user->setBirthday($birthday);
+            $user->setGender($gender);
             $dm->merge($user);
             $dm->flush();
 

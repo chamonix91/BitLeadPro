@@ -104,24 +104,28 @@ class ApiUserController extends FOSRestController
 
     /**
      * @Route("/allusers", name="api_user_getalll", methods={"GET"})
-     * @param User $user
-     * @return JsonResponse
+     * @param Request $request
+     * @param UserManagerInterface $userManager
+     * @param DocumentManager $dm
+     * @param UserService $userservice
+     * @return Response
      */
     public function getAllUser(Request $request, UserManagerInterface $userManager, DocumentManager  $dm, UserService $userservice)
     {
-
 
         $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
         $normalizers = [new ObjectNormalizer()];
         $serializer = new Serializer($normalizers, $encoders);
 
-        //$users = $userservice->getAllUsers( $serializer, $dm);
         $users = $dm->getRepository(User::class)->findAll();
 
+        if ($users == null){
+            return new JsonResponse(["Users not found"], 500);
 
+        }
+        $allusers = $userservice->getAllUsers( $serializer, $dm,$users);
 
-
-        return new Response($users, 200, ['Content-Type' => 'application/json']);
+        return new Response($allusers, 200, ['Content-Type' => 'application/json']);
     }
 
     //////////////////////////////////////////////
@@ -144,11 +148,9 @@ class ApiUserController extends FOSRestController
         $serializer = new Serializer($normalizers, $encoders);
 
         $currentuser = $this->getUser();
-
         $user = $userservice->GetOneUser( $serializer, $currentuser);
 
         $statusCode = 200;
-
         $view = $this->view($user, $statusCode);
         return $this->handleView($view);
 
@@ -178,8 +180,13 @@ class ApiUserController extends FOSRestController
 
         $user = $dm->getRepository(User::class)->find($id);
 
+        if ($user == null){
+            return new JsonResponse(["User not found"], 500);
+
+        }
+
         $userdetail = $userservice->GetOneUser($serializer, $user);
-        //dump($user);die();
+
         $statusCode = 200;
 
         $view = $this->view($userdetail, $statusCode);
@@ -209,7 +216,6 @@ class ApiUserController extends FOSRestController
             true
         );
 
-
         $firstname = $data['firstname'];
         $lastname = $data['lastname'];
         $address = $data['address'];
@@ -220,9 +226,6 @@ class ApiUserController extends FOSRestController
         $tel = $data['tel'];
         $gender = $data['gender'];
         $birthday= strtotime(substr($data['birthday'],0,24));
-
-
-
 
         $user = $dm->getRepository(User::class)->find($id);
         if ($user) {
@@ -241,7 +244,8 @@ class ApiUserController extends FOSRestController
 
         }
         // In case our PUT was a success we need to return a 200 HTTP OK response with the object as a result of PUT
-        return new JsonResponse(["success" => $user->getUsername(). " has been updated!"], 200);    }
+        return new JsonResponse(["success" => $user->getUsername(). " has been updated!"], 200);
+    }
 
 
     /**

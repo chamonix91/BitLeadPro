@@ -6,6 +6,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "alcaeus/mongo-php-adapter": "^1.1",
+        "coinbase/coinbase": "^2.8",
         "doctrine/mongodb-odm-bundle": "^3.6",
         "fresh/vich-uploader-serialization-bundle": "^2.4",
         "friendsofsymfony/rest-bundle": "^2.7",

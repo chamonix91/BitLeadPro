@@ -64,12 +64,31 @@ class MlmService
 
             $ds = $direct->getDirects();
 
+            if ($direct->getPhotoName()== null){
             $treeArray[] = [
+                "data" => [
+                    "avatar"=> "placeholder.jpg",
+                    "img"=> "0"
+                ],
                 "label" => $direct->getUsername(),
+                "type" => "person",
+                "styleClass" => "ui-person",
                 "children" => json_decode($this->getmyMLM($serializer,$ds),true)
             ];
+            }
+            else {
+                $treeArray[] = [
+                    "data" => [
+                        "avatar"=> $direct->getPhotoName(),
+                        "img"=> "1"
+                    ],
+                    "label" => $direct->getUsername(),
+                    "type" => "person",
+                    "styleClass" => "ui-person",
+                    "children" => json_decode($this->getmyMLM($serializer,$ds),true)
+                ];
+            }
         }
-
         $jsonObject = $serializer->serialize($treeArray, 'json', [
             'circular_reference_handler' => function ($object) {
                 return $object;
@@ -78,15 +97,15 @@ class MlmService
 
         return $jsonObject;
 
-
     }
 
     /////////////////////////
-    ////   CREATE MLM    ////
+    ////   GET DOWNLINES ////
     /////////////////////////
 
-    public function CreateMlm(SerializerInterface $serializer, User $user, PersistentCollection $directs)
+    public function GetDownlines(SerializerInterface $serializer, PersistentCollection $directs, Array $downlines)
     {
+
 
     }
 

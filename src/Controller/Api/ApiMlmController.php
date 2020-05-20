@@ -46,12 +46,35 @@ class ApiMlmController extends AbstractController
 
         $tree = $MlmService->getmyMLM($serializer, $directs);
 
-        $mytree = [
-            "label" => $user->getUsername(),
-            "expanded" => "true",
-            "styleClass" => "ui-person",
-            "children" => json_decode($tree,true)
-        ];
+        if ($user->getPhotoName()== null) {
+            $mytree = [
+                "data" => [
+                    "avatar" => "placeholder.jpg",
+                    "firstname" => $user->getFirstname(),
+                    "lastname" => $user->getLastname(),
+                    "img" => "0"
+                ],
+                "label" => $user->getUsername(),
+                "expanded" => "true",
+                "styleClass" => "ui-person",
+                "children" => json_decode($tree, true)
+            ];
+        }
+        else{
+
+            $treeArray[] = [
+                "data" => [
+                    "avatar"=> $user->getPhotoName(),
+                    "firstname"=> $user->getFirstname() ,
+                    "lastname"=> $user->getLastname() ,
+                    "img"=> "1"
+                ],
+                "label" => $user->getUsername(),
+                "expanded" => "true",
+                "styleClass" => "ui-person",
+                "children" => json_decode($tree, true)
+            ];
+        }
 
         $jsonObject = $serializer->serialize($mytree, 'json', [
             'circular_reference_handler' => function ($object) {

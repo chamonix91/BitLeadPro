@@ -68,6 +68,8 @@ class MlmService
             $treeArray[] = [
                 "data" => [
                     "avatar"=> "placeholder.jpg",
+                    "firstname"=> $direct->getFirstname() ,
+                    "lastname"=> $direct->getLastname() ,
                     "img"=> "0"
                 ],
                 "label" => $direct->getUsername(),
@@ -80,6 +82,8 @@ class MlmService
                 $treeArray[] = [
                     "data" => [
                         "avatar"=> $direct->getPhotoName(),
+                        "firstname"=> $direct->getFirstname() ,
+                        "lastname"=> $direct->getLastname() ,
                         "img"=> "1"
                     ],
                     "label" => $direct->getUsername(),

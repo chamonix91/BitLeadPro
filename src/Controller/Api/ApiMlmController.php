@@ -62,7 +62,7 @@ class ApiMlmController extends AbstractController
         }
         else{
 
-            $treeArray[] = [
+            $mytree[] = [
                 "data" => [
                     "avatar"=> $user->getPhotoName(),
                     "firstname"=> $user->getFirstname() ,

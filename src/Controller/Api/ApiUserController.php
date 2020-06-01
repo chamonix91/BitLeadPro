@@ -8,9 +8,12 @@
 
 namespace App\Controller\Api;
 
+use App\Document\Transactions;
 use App\Document\User;
 
+use App\Service\CommissionService;
 use App\Service\FileUploader;
+use App\Service\MlmService;
 use App\Service\UserService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\RestBundle\Controller\Annotations\View;
@@ -38,6 +41,9 @@ use JMS\Serializer\SerializationContext;
 class ApiUserController extends FOSRestController
 {
 
+    //////////////////////////////////////////////
+    ///////////  GET CURRENT USER  ///////////////
+    //////////////////////////////////////////////
 
     /**
      * @Route("/current", name="api__logged_user", methods={"GET"})
@@ -52,7 +58,6 @@ class ApiUserController extends FOSRestController
         $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
         $normalizers = [new ObjectNormalizer()];
         $serializer = new Serializer($normalizers, $encoders);
-
         $currentuser = $this->getUser();
 
         $user = $userservice->GetOneUser( $serializer, $currentuser);
@@ -70,10 +75,13 @@ class ApiUserController extends FOSRestController
 
     /**
      * @Route("/myalldirects", name="api_user_mysirects", methods={"GET"})
-     * @param User $user
+     * @param Request $request
+     * @param DocumentManager $dm
+     * @param UserManagerInterface $userManager
+     * @param UserService $userservice
      * @return JsonResponse
      */
-    public function getmyalldirectsUser(Request $request, UserManagerInterface $userManager)
+    public function getmyalldirectsUser(DocumentManager  $dm, UserManagerInterface $userManager, UserService $userservice)
     {
 
         $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
@@ -81,20 +89,119 @@ class ApiUserController extends FOSRestController
         $serializer = new Serializer($normalizers, $encoders);
 
         $user = $this->getUser();
-        //$myuser = (get_class($user));
+        $directs = $user->getDirects();
+
+        if ($directs == null){
+            return new JsonResponse(["No Directs Yet"], 500);
+
+        }
+        $alldirects = $userservice->GetManyUsers( $serializer,$directs);
+
+
+        return new Response($alldirects, 200, ['Content-Type' => 'application/json']);
+    }
+
+    ////////////////////////////////////////////////
+    ///////////  MY ALL INDIRECTS    ///////////////
+    /// ////////////////////////////////////////////
+
+    /**
+     * @Route("/myallindirects", name="api_user_myindirects", methods={"GET"})
+     * @param DocumentManager $dm
+     * @param UserManagerInterface $userManager
+     * @param UserService $userservice
+     * @return JsonResponse
+     */
+    public function getmyallindirectsUser(DocumentManager  $dm, UserManagerInterface $userManager, MlmService $mlmservice)
+    {
+
+        $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers, $encoders);
+
+        $user = $this->getUser();
+        $directs = $user->getDirects();
+
+        if ($directs == null){
+            return new JsonResponse(["No Directs Yet"], 500);
+
+        }
+        $allindirects = $mlmservice->GetDownlines( $serializer,$directs);
+
+
+        return new Response($allindirects, 200, ['Content-Type' => 'application/json']);
+    }
+
+    /////////////////////////////////////////////////////
+    ///////////  MY ALL DIRECTS BY USER   ///////////////
+    /// /////////////////////////////////////////////////
+
+    /**
+     * @Route("/alldirects/{id}", name="api_user_directs_by_id", methods={"GET"})
+     * @param Request $request
+     * @param DocumentManager $dm
+     * @param UserManagerInterface $userManager
+     * @param UserService $userservice
+     * @return JsonResponse
+     */
+    public function getalldirectsByUser(DocumentManager  $dm, UserManagerInterface $userManager, UserService $userservice, $id)
+    {
+
+        $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers, $encoders);
+
+        $user = $dm->getRepository(User::class)->find($id);
 
         $directs = $user->getDirects();
 
+        if (!$directs){
+            return new JsonResponse(["No Directs Yet"], 500);
+        }
+        $alldirects = $userservice->GetManyUsers( $serializer,$directs);
 
-        $jsonObject = $serializer->serialize($directs, 'json', [
-            'circular_reference_handler' => function ($object) {
-                return $object->getId();
-            }
-        ],[AbstractNormalizer::IGNORED_ATTRIBUTES => ['firstname']]);
+        return new Response($alldirects, 200, ['Content-Type' => 'application/json']);
+    }
 
 
+    //////////////////////////////////////////////
+    ///////////  MY DIRECTS NUMBER ///////////////
+    //////////////////////////////////////////////
 
-        return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
+    /**
+     * @Route("/directsnumberuser/{id}", name="api_user_directs_number_user", methods={"GET"})
+     * @param DocumentManager $dm
+     * @param UserManagerInterface $userManager
+     * @param $id
+     * @return JsonResponse
+     */
+    public function getmydirectsnumber(DocumentManager  $dm,UserManagerInterface $userManager, $id)
+    {
+
+        $user = $dm->getRepository(User::class)->find($id);
+        $directs = $user->getDirects();
+        $directnumber = count($directs);
+
+        return new Response($directnumber, 200, ['Content-Type' => 'application/json']);
+    }
+
+    ////////////////////////////////////////////////
+    ///////////  DIRECTS NUMBER BY USER  ///////////
+    ////////////////////////////////////////////////
+
+    /**
+     * @Route("/mydirectsnumber", name="api_user_mysirects", methods={"GET"})
+     * @param UserManagerInterface $userManager
+     * @return JsonResponse
+     */
+    public function directsnumberByUser(UserManagerInterface $userManager)
+    {
+
+        $user = $this->getUser();
+        $directs = $user->getDirects();
+        $directnumber = count($directs);
+
+        return new Response($directnumber, 200, ['Content-Type' => 'application/json']);
     }
 
 
@@ -121,7 +228,6 @@ class ApiUserController extends FOSRestController
 
         if ($users == null){
             return new JsonResponse(["Users not found"], 500);
-
         }
         $allusers = $userservice->getAllUsers( $serializer, $dm,$users);
 
@@ -177,12 +283,10 @@ class ApiUserController extends FOSRestController
         $normalizers = [new ObjectNormalizer()];
         $serializer = new Serializer($normalizers, $encoders);
 
-
         $user = $dm->getRepository(User::class)->find($id);
 
         if ($user == null){
             return new JsonResponse(["User not found"], 500);
-
         }
 
         $userdetail = $userservice->GetOneUser($serializer, $user);
@@ -248,6 +352,10 @@ class ApiUserController extends FOSRestController
     }
 
 
+    ////////////////////////////////////
+    /////////    UP FILE      //////////
+    /// ////////////////////////////////
+
     /**
      * @Rest\Post("/up")
      * @param Request $request
@@ -262,6 +370,277 @@ class ApiUserController extends FOSRestController
         return $fileName;
 
         //$a->upload($file);
+    }
+
+
+
+    ////////////////////////////////////////////
+    ///////////    UPGRADE ME      /////////////
+    ////////////////////////////////////////////
+
+
+    /**
+     * Replaces Article resource
+     * @Rest\Post("/upgrademe")
+     * @param Request $request
+     * @param DocumentManager $dm
+     * @return JsonResponse
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     */
+    public function UpgradeMe(DocumentManager $dm)
+    {
+
+        $ArrayCommission = [25,75,150,250,500,1500,2500];
+        $CommissionService = new CommissionService();
+        $user = $this->getUser();
+        //$iduser = $user->getId();
+        //dump($iduser);die();
+        //$user = $dm->getRepository(User::class)->find($iduser);
+
+
+        if($user->getLevel() == 0){
+            $upline = $user->getUpline();
+            $wallet = $user->getWallet();
+            $balance = $wallet->getBalance();
+
+            if ($balance < 25){
+                return new JsonResponse(["Failed to upgrade" => "Solde insuffisant "], 500);
+            }
+            $user->setLevel(1);
+            $dm->persist($user);
+            $dm->flush();
+
+            $CommissionService->UpdateWallet($upline,$ArrayCommission[0],'Income',$dm);
+            $CommissionService->UpdateWallet($user,$ArrayCommission[0],'Expense',$dm);
+
+            $CommissionService->TransactionUpgrade('Upgrade',$upline,$ArrayCommission[0],$dm);
+            $CommissionService->TransactionUpgrade('Affiliation',$user,-$ArrayCommission[0],$dm);
+
+            return new JsonResponse(["success" => $user->getUsername(). " has been upgraded to level 1"], 200);
+        }
+
+        elseif($user->getLevel() == 1){
+
+            $wallet = $user->getWallet();
+            $balance = $wallet->getBalance();
+
+            if ($balance < 100){
+                return new JsonResponse(["Failed to upgrade" => "Solde insuffisant "], 500);
+            }
+
+            $CommissionService->UpdateWallet($user,100,'Expense',$dm);
+            $user->setLevel(2);
+            $dm->persist($user);
+            $dm->flush();
+
+            $upline = $user->getUpline();
+            $i=2;
+            while ($i>=1){
+
+                /*if ($upline == null){
+                    break;
+                }*/
+
+                $level = $upline->getLevel();
+                if($level >= 2){
+                    $amount = $ArrayCommission[$i-1];
+                    $CommissionService->UpdateWallet($upline,$amount,'Income',$dm);
+                    $CommissionService->TransactionUpgrade("Upgrade",$upline,$amount,$dm);
+
+                }
+                $upline = $upline->getUpline();
+                $i = $i-1 ;
+
+            }
+
+            return new JsonResponse(["success" => $user->getUsername().     " has been upgraded to level 2"], 200);
+        }
+
+        elseif($user->getLevel() == 2){
+
+            $wallet = $user->getWallet();
+            $balance = $wallet->getBalance();
+
+            if ($balance < 250){
+                return new JsonResponse(["Failed to upgrade" => "Solde insuffisant "], 500);
+            }
+
+            $CommissionService->UpdateWallet($user,250,'Expense',$dm);
+            $user->setLevel(3);
+            $dm->persist($user);
+            $dm->flush();
+
+            $upline = $user->getUpline();
+            $i=3;
+            while ($i>=1){
+
+                if ($upline == null){
+                    break;
+                }
+
+                $level = $upline->getLevel();
+                if($level >= 3){
+                    $amount = $ArrayCommission[$i-1];
+                    $CommissionService->UpdateWallet($upline,$amount,'Income',$dm);
+                    $CommissionService->TransactionUpgrade("Upgrade",$upline,$amount,$dm);
+
+                }
+                $upline = $upline->getUpline();
+                $i = $i-1 ;
+
+            }
+
+            return new JsonResponse(["success" => $user->getUsername().     " has been upgraded to level 3"], 200);
+        }
+
+        elseif($user->getLevel() == 3){
+
+            $wallet = $user->getWallet();
+            $balance = $wallet->getBalance();
+
+            if ($balance < 500){
+                return new JsonResponse(["Failed to upgrade" => "Solde insuffisant "], 500);
+            }
+
+            $CommissionService->UpdateWallet($user,500,'Expense',$dm);
+            $user->setLevel(4);
+            $dm->persist($user);
+            $dm->flush();
+
+            $upline = $user->getUpline();
+            $i=4;
+            while ($i>=1){
+
+                if ($upline == null){
+                    break;
+                }
+
+                $level = $upline->getLevel();
+                if($level >= 4){
+                    $amount = $ArrayCommission[$i-1];
+                    $CommissionService->UpdateWallet($upline,$amount,'Income',$dm);
+                    $CommissionService->TransactionUpgrade("Upgrade",$upline,$amount,$dm);
+
+                }
+                $upline = $upline->getUpline();
+                $i = $i-1 ;
+
+            }
+
+            return new JsonResponse(["success" => $user->getUsername().     " has been upgraded to level 4"], 200);
+        }
+
+        elseif($user->getLevel() == 4){
+
+            $wallet = $user->getWallet();
+            $balance = $wallet->getBalance();
+
+            if ($balance < 1000){
+                return new JsonResponse(["Failed to upgrade" => "Solde insuffisant "], 500);
+            }
+
+            $CommissionService->UpdateWallet($user,1000,'Expense',$dm);
+            $user->setLevel(5);
+            $dm->persist($user);
+            $dm->flush();
+
+            $upline = $user->getUpline();
+            $i=5;
+            while ($i>=1){
+
+                if ($upline == null){
+                    break;
+                }
+
+                $level = $upline->getLevel();
+                if($level >= 5){
+                    $amount = $ArrayCommission[$i-1];
+                    $CommissionService->UpdateWallet($upline,$amount,'Income',$dm);
+                    $CommissionService->TransactionUpgrade("Upgrade",$upline,$amount,$dm);
+
+                }
+                $upline = $upline->getUpline();
+                $i = $i-1 ;
+
+            }
+
+            return new JsonResponse(["success" => $user->getUsername().     " has been upgraded to level 5"], 200);
+        }
+        elseif($user->getLevel() == 5){
+
+            $wallet = $user->getWallet();
+            $balance = $wallet->getBalance();
+
+            if ($balance < 2500){
+                return new JsonResponse(["Failed to upgrade" => "Solde insuffisant "], 500);
+            }
+
+            $CommissionService->UpdateWallet($user,2500,'Expense',$dm);
+            $user->setLevel(6);
+            $dm->persist($user);
+            $dm->flush();
+
+            $upline = $user->getUpline();
+            $i=6;
+            while ($i>=1){
+
+                if ($upline == null){
+                    break;
+                }
+
+                $level = $upline->getLevel();
+                if($level >= 6){
+                    $amount = $ArrayCommission[$i-1];
+                    $CommissionService->UpdateWallet($upline,$amount,'Income',$dm);
+                    $CommissionService->TransactionUpgrade("Upgrade",$upline,$amount,$dm);
+
+                }
+                $upline = $upline->getUpline();
+                $i = $i-1 ;
+
+            }
+
+            return new JsonResponse(["success" => $user->getUsername().     " has been upgraded to level 6"], 200);
+        }
+        elseif($user->getLevel() == 6){
+
+            $wallet = $user->getWallet();
+            $balance = $wallet->getBalance();
+
+            if ($balance < 5000){
+                return new JsonResponse(["Failed to upgrade" => "Solde insuffisant "], 500);
+            }
+
+            $CommissionService->UpdateWallet($user,5000,'Expense',$dm);
+            $user->setLevel(7);
+            $dm->persist($user);
+            $dm->flush();
+
+            $upline = $user->getUpline();
+            $i=7;
+            while ($i>=1){
+
+                if ($upline == null){
+                    break;
+                }
+
+                $level = $upline->getLevel();
+                if($level >= 7){
+                    $amount = $ArrayCommission[$i-1];
+                    $CommissionService->UpdateWallet($upline,$amount,'Income',$dm);
+                    $CommissionService->TransactionUpgrade("Upgrade",$upline,$amount,$dm);
+
+                }
+                $upline = $upline->getUpline();
+                $i = $i-1 ;
+
+            }
+
+            return new JsonResponse(["success" => $user->getUsername().     " has been upgraded to level 7"], 200);
+        }
+
+
+
     }
 
 

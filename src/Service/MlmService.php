@@ -107,8 +107,26 @@ class MlmService
     ////   GET DOWNLINES ////
     /////////////////////////
 
-    public function GetDownlines(SerializerInterface $serializer, PersistentCollection $directs, Array $downlines)
+    public function GetDownlines(SerializerInterface $serializer, PersistentCollection $directs)
     {
+        $indirects = array();
+        $i = 0;
+        foreach ($directs as $direct){
+            $i = $i+1;
+            array_push($indirects, $direct);
+        }
+
+        $mydownlines = $indirects[$i];
+        $downlines = $mydownlines->getDirects();
+        $this->GetDownlines($serializer, $downlines);
+
+        $jsonObject = $serializer->serialize($indirects, 'json', [
+            'circular_reference_handler' => function ($object) {
+                return $object;
+            }
+        ]);
+
+        return $jsonObject;
 
 
     }

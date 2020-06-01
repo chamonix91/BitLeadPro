@@ -58,7 +58,7 @@ class User extends BaseUser
     protected $country;
 
     /**
-     * @MongoDB\Field(type="string")
+     * @MongoDB\Field(type="integer")
      */
     protected $level;
 
@@ -87,11 +87,26 @@ class User extends BaseUser
      */
     private $photoName;
 
+    /**
+     * @MongoDB\ReferenceOne(targetDocument=Wallet::class)
+     */
+    public $wallet;
+
 
     /**
      * @MongoDB\ReferenceMany(targetDocument=Coupon::class,  mappedBy="owner",cascade={"persist"})
      */
     public $coupons;
+
+    /**
+     * @MongoDB\ReferenceMany(targetDocument=Transactions::class,  mappedBy="sender",cascade={"persist"})
+     */
+    public $transactions_sent;
+
+    /**
+     * @MongoDB\ReferenceMany(targetDocument=Transactions::class,  mappedBy="receiver",cascade={"persist"})
+     */
+    public $transactions_received;
 
 
     /** @MongoDB\ReferenceOne(targetDocument=User::class,  inversedBy="directs",cascade={"persist"}) */
@@ -103,6 +118,11 @@ class User extends BaseUser
     public function __construct()
     {
         $this->directs = new \Doctrine\Common\Collections\ArrayCollection();
+
+        $date = new \DateTime('now');
+
+        //$this->created_date = strtotime(substr($date->getTimestamp(),0,24));
+        $this->created_date = $date->getTimestamp();
 
     }
 
@@ -347,9 +367,6 @@ class User extends BaseUser
     }
 
 
-
-
-
     /**
      * @return mixed
      */
@@ -365,6 +382,25 @@ class User extends BaseUser
     {
         $this->tel = $tel;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getWallet()
+    {
+        return $this->wallet;
+    }
+
+    /**
+     * @param mixed $wallet
+     */
+    public function setWallet($wallet): void
+    {
+        $this->wallet = $wallet;
+    }
+
+
+
 
 
 

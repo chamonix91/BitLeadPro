@@ -133,4 +133,71 @@ class UserService
 
     }
 
+
+
+    //////////////////////////
+    /////  GET MANY USER /////
+    //////////////////////////
+
+    /**
+     * @param SerializerInterface $serializer
+     * @param PersistentCollection $users
+     * @return string
+     */
+    public function GetManyUsers(SerializerInterface $serializer, PersistentCollection $users)
+    {
+
+        $formatted = array();
+        if ($users == null){
+            return null;
+        }
+        else  {
+            foreach ($users as $user) {
+                $birthday = $user->getBirthday();
+                if ($birthday) {
+                    $birthday_date = date("m-d-Y", $birthday->sec);
+                } else {
+                    $birthday_date = null;
+                }
+                $formatted[] = [
+                    'id' => $user->getId(),
+                    'firstname' => $user->getfirstname(),
+                    'email' => $user->getEmail(),
+                    'lastname' => $user->getlastname(),
+                    'address' => $user->getaddress(),
+                    'tel' => $user->gettel(),
+                    'gender' => $user->getgender(),
+                    'postalcode' => $user->getpostalcode(),
+                    'city' => $user->getcity(),
+                    'country' => $user->getcountry(),
+                    'level' => $user->getlevel(),
+                    'birthday' => $birthday_date,
+                    'username' => $user->getUsername(),
+                    'created_date' => $user->getCreatedDate(),
+                    'lastLogin' => $user->getlastLogin(),
+                    'role' => $user->getRoles(),
+                    'image' => $user->getPhotoName()
+                ];
+            }
+        }
+
+
+
+
+        $allusers= $serializer->serialize(
+            $formatted,
+            'json',[
+                'circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                }
+            ]
+        );
+
+
+
+
+        return $allusers ;
+
+    }
+
 }

@@ -11,6 +11,8 @@ namespace App\Controller\Api;
 use App\Document\User;
 use App\Document\Coupon;
 use App\Document\Direct;
+use App\Document\Wallet;
+use App\Service\CommissionService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\UserBundle\Model\UserManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,7 +45,6 @@ class ApiAffiliationController extends AbstractController
     public function newAffiliation(SerializerInterface $serializer, Request $request,  UserManagerInterface $userManager,DocumentManager  $dm, $id){
 
 
-
         $data = json_decode(
             $request->getContent(),
             true
@@ -64,7 +65,6 @@ class ApiAffiliationController extends AbstractController
         $image = $data['image'];
 
 
-
         $user = new User();
         $user->setUsername($username);
           $user  ->setPlainPassword($password);
@@ -72,7 +72,7 @@ class ApiAffiliationController extends AbstractController
             $user->setEnabled(true);
             $user->setRoles(array('ROLE_USER'));
             $user->setSuperAdmin(false);
-            $user->setLevel('0');
+            $user->setLevel(0);
             $user->setFirstname($firstname);
             $user->setLastname($lastname);
             $user->setAddress($address);
@@ -88,21 +88,34 @@ class ApiAffiliationController extends AbstractController
             if($withcoupon == "0"){
 
                 $upline = $dm->getRepository(User::class)->find($id);
+
             }
 
             if ($withcoupon == "1"){
                 $upline = $couponn->getOwner();
             }
 
+
+
             $user->setUpline($upline);
 
-            //dump($user)
+            $wallet = new Wallet();
+            $wallet->setExpenses(0);
+            $wallet->setBalance(0);
+            $dm->persist($wallet);
+            $dm->flush();
+
+            $user->setWallet($wallet);
+
+
+        //dump($user)
 
         try {
             $userManager->updateUser($user, true);
         } catch (\Exception $e) {
             return new JsonResponse(["error" => $e->getMessage()], 500);
         }
+
 
         $couponObject = new Coupon();
         $couponObject->setName('Affiliation');
@@ -114,11 +127,7 @@ class ApiAffiliationController extends AbstractController
         $dm->persist($couponObject);
         $dm->flush();
 
-
-
-
-
-        return new JsonResponse(["success" => $user->getUsername(). " has been registered!"], 200);
+        return new JsonResponse(["success" => $user->getUsername(). " id " .$user->getId(). " has been registered!"], 200);
 
 
     }
@@ -154,6 +163,7 @@ class ApiAffiliationController extends AbstractController
         $image = $data['image'];
 
 
+
         $user = new User();
         $user->setUsername($username);
         $user ->setPlainPassword($password);
@@ -161,7 +171,7 @@ class ApiAffiliationController extends AbstractController
         $user->setEnabled(false);
         $user->setRoles(array('ROLE_USER'));
         $user->setSuperAdmin(false);
-        $user->setLevel('0');
+        $user->setLevel(0);
         $user->setFirstname($firstname);
         $user->setLastname($lastname);
         $user->setAddress($address);
@@ -177,6 +187,15 @@ class ApiAffiliationController extends AbstractController
 
 
         $user->setUpline($upline);
+
+        $wallet = new Wallet();
+        $wallet->setExpenses(0);
+        $wallet->setBalance(0);
+        $dm->persist($wallet);
+        $dm->flush();
+
+        $user->setWallet($wallet);
+
 
         try {
             $userManager->updateUser($user, true);

@@ -62,7 +62,6 @@ class ApiAffiliationController extends AbstractController
         $postalcode = $data['postalcode'];
         $city = $data['city'];
         $country = $data['country'];
-        $image = $data['image'];
 
 
         $user = new User();
@@ -78,7 +77,6 @@ class ApiAffiliationController extends AbstractController
             $user->setAddress($address);
             $user->setPostalcode($postalcode);
             $user->setCity($city);
-            $user->setPhotoName($image);
             $user->setCountry($country);
             $user->setPhotoName($image);
 
@@ -88,14 +86,11 @@ class ApiAffiliationController extends AbstractController
             if($withcoupon == "0"){
 
                 $upline = $dm->getRepository(User::class)->find($id);
-
             }
 
             if ($withcoupon == "1"){
                 $upline = $couponn->getOwner();
             }
-
-
 
             $user->setUpline($upline);
 
@@ -106,9 +101,6 @@ class ApiAffiliationController extends AbstractController
             $dm->flush();
 
             $user->setWallet($wallet);
-
-
-        //dump($user)
 
         try {
             $userManager->updateUser($user, true);
@@ -160,7 +152,7 @@ class ApiAffiliationController extends AbstractController
         $postalcode = $data['postalcode'];
         $city = $data['city'];
         $country = $data['country'];
-        $image = $data['image'];
+
 
 
 
@@ -178,13 +170,9 @@ class ApiAffiliationController extends AbstractController
         $user->setPostalcode($postalcode);
         $user->setCity($city);
         $user->setCountry($country);
-        $user->setPhotoName($image);
-
-
 
         $couponn =$dm->getRepository(Coupon::class)->findOneBy(array('code'=>$coupon));
         $upline = $couponn->getOwner();
-
 
         $user->setUpline($upline);
 

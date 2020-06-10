@@ -109,12 +109,10 @@ class ApiMlmController extends AbstractController
 
         $user = $dm->getRepository(User::class)->find($id);
         $directs = $user->getDirects();
-        $downlines = array();
-        $tree = json_decode($MlmService->getmyMLM($serializer, $directs));
 
-        dump($tree[0]);die();
+        $downlines = json_decode($MlmService->GetDownlines($serializer, $directs));
 
-        $downlines = $tree["label"];
+
         $jsonObject = $serializer->serialize($downlines, 'json', [
             'circular_reference_handler' => function ($object) {
                 return $object;
@@ -123,7 +121,6 @@ class ApiMlmController extends AbstractController
 
 
         return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
-
 
     }
 

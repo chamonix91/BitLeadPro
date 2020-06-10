@@ -19,6 +19,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\RestBundle\Controller\Annotations\View;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\UserBundle\Model\UserManagerInterface;
+use function GuzzleHttp\Promise\all;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -108,11 +109,10 @@ class ApiUserController extends FOSRestController
     /**
      * @Route("/myallindirects", name="api_user_myindirects", methods={"GET"})
      * @param DocumentManager $dm
-     * @param UserManagerInterface $userManager
-     * @param UserService $userservice
+     * @param MlmService $mlmservice
      * @return JsonResponse
      */
-    public function getmyallindirectsUser(DocumentManager  $dm, UserManagerInterface $userManager, MlmService $mlmservice)
+    public function getmyallindirectsUser(DocumentManager  $dm, MlmService $mlmservice)
     {
 
         $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
@@ -120,6 +120,8 @@ class ApiUserController extends FOSRestController
         $serializer = new Serializer($normalizers, $encoders);
 
         $user = $this->getUser();
+        $numberdirect= $this->getmydirectsnumber();
+
         $directs = $user->getDirects();
 
         if ($directs == null){
@@ -128,8 +130,63 @@ class ApiUserController extends FOSRestController
         }
         $allindirects = $mlmservice->GetDownlines( $serializer,$directs);
 
+        $indirects = json_decode($allindirects,true);
 
-        return new Response($allindirects, 200, ['Content-Type' => 'application/json']);
+        //$array = \array_diff($indirects, $directs);
+
+
+
+
+        return new Response($indirects, 200, ['Content-Type' => 'application/json']);
+    }
+
+
+    ////////////////////////////////////////////////
+    ///////////  MY ALL INDIRECTS NUMBER   /////////
+    /// ////////////////////////////////////////////
+
+    /**
+     * @Route("/myallindirectsnumber", name="api_user_myindirects_number", methods={"GET"})
+     * @param DocumentManager $dm
+     * @param MlmService $mlmservice
+     * @return JsonResponse
+     * @Rest\View()
+     */
+    public function getmyallindirectsNumber(DocumentManager  $dm, MlmService $mlmservice)
+    {
+
+        $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers, $encoders);
+
+        $user = $this->getUser();
+        $numberdirect= $this->getmydirectsnumber();
+
+        $directs = $user->getDirects();
+
+        if ($directs == null){
+            return new JsonResponse(["No Directs Yet"], 500);
+
+        }
+        $allindirects = $mlmservice->GetDownlines( $serializer,$directs);
+
+        $indirects = json_decode($allindirects,true);
+
+        $numberdownlines = count($indirects);
+
+        //dump($numberdirect);dump($numberdownlines);
+        dump($indirects);
+        die();
+
+        $numberindirects = $numberdownlines - $numberdirect ;
+
+        $statusCode = 200;
+        $view = $this->view($numberindirects, $statusCode);
+        return $this->handleView($view);
+
+
+
+
     }
 
     /////////////////////////////////////////////////////
@@ -165,7 +222,7 @@ class ApiUserController extends FOSRestController
 
 
     //////////////////////////////////////////////
-    ///////////  MY DIRECTS NUMBER ///////////////
+    ///////////  DIRECTS NUMBER BY USER  /////////
     //////////////////////////////////////////////
 
     /**
@@ -175,7 +232,7 @@ class ApiUserController extends FOSRestController
      * @param $id
      * @return JsonResponse
      */
-    public function getmydirectsnumber(DocumentManager  $dm,UserManagerInterface $userManager, $id)
+    public function directsnumberByUser(DocumentManager  $dm,UserManagerInterface $userManager, $id)
     {
 
         $user = $dm->getRepository(User::class)->find($id);
@@ -186,7 +243,7 @@ class ApiUserController extends FOSRestController
     }
 
     ////////////////////////////////////////////////
-    ///////////  DIRECTS NUMBER BY USER  ///////////
+    ///////////  MY DIRECTS NUMBER       ///////////
     ////////////////////////////////////////////////
 
     /**
@@ -194,7 +251,7 @@ class ApiUserController extends FOSRestController
      * @param UserManagerInterface $userManager
      * @return JsonResponse
      */
-    public function directsnumberByUser(UserManagerInterface $userManager)
+    public function getmydirectsnumber()
     {
 
         $user = $this->getUser();
@@ -382,10 +439,8 @@ class ApiUserController extends FOSRestController
     /**
      * Replaces Article resource
      * @Rest\Post("/upgrademe")
-     * @param Request $request
      * @param DocumentManager $dm
      * @return JsonResponse
-     * @throws \Doctrine\ODM\MongoDB\LockException
      */
     public function UpgradeMe(DocumentManager $dm)
     {
@@ -483,7 +538,6 @@ class ApiUserController extends FOSRestController
                     $amount = $ArrayCommission[$i-1];
                     $CommissionService->UpdateWallet($upline,$amount,'Income',$dm);
                     $CommissionService->TransactionUpgrade("Upgrade",$upline,$amount,$dm);
-
                 }
                 $upline = $upline->getUpline();
                 $i = $i-1 ;
@@ -642,6 +696,8 @@ class ApiUserController extends FOSRestController
 
 
     }
+
+
 
 
 }

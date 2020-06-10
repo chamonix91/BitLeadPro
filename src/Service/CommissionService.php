@@ -10,8 +10,8 @@ namespace App\Service;
 
 
 use App\Document\Transactions;
-use App\Document\User;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Documents\User;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -29,6 +29,44 @@ class CommissionService
      * @return void
      */
     public function UpdateWallet(UserInterface $user, int $amount, String $type, DocumentManager $dm): void
+    {
+        $wallet = $user->getWallet();
+
+        if ($type == 'Income'){
+
+            $income = $wallet->getIncome() + $amount;
+            $balance = $wallet->getBalance();
+            $wallet->setIncome($income);
+            $wallet->setBalance($balance + $amount);
+
+        }
+
+        if ($type == 'Expense'){
+
+            $expense = $wallet->getExpenses() - $amount;
+            $balance = $wallet->getBalance();
+            $wallet->setExpenses($expense);
+            $wallet->setBalance($balance - $amount);
+
+        }
+
+        $dm->persist($wallet);
+        $dm->flush();
+
+    }
+
+    /////////////////////////////
+    /////  SEND CASH      ///////
+    /////////////////////////////
+
+    /**
+     * @param User $user
+     * @param int $amount
+     * @param String $type
+     * @param DocumentManager $dm
+     * @return void
+     */
+    public function SendCashToWallet(\App\Document\User $user, int $amount, String $type, DocumentManager $dm): void
     {
         $wallet = $user->getWallet();
 
@@ -73,6 +111,30 @@ class CommissionService
         $transaction->setCategory($category);
         $transaction->setAmount($amount);
         $transaction->setReceiver($receiver);
+
+        $dm->persist($transaction);
+        $dm->flush();
+
+    }
+
+    //////////////////////////////////
+    ///// TRANSACTION SEND CASH  /////
+    //////////////////////////////////
+
+    /**
+     * @param String $category
+     * @param \App\Document\User $sender
+     * @param \App\Document\User $receiver
+     * @param int $amount
+     * @param DocumentManager $dm
+     */
+    public function TransactionSendCash(String $category,\App\Document\User $sender, \App\Document\User $receiver, int $amount, DocumentManager $dm )
+    {
+        $transaction = new Transactions();
+        $transaction->setCategory($category);
+        $transaction->setAmount($amount);
+        $transaction->setReceiver($receiver);
+        $transaction->setSender($sender);
 
         $dm->persist($transaction);
         $dm->flush();

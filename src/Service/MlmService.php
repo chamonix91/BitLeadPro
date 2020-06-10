@@ -109,18 +109,46 @@ class MlmService
 
     public function GetDownlines(SerializerInterface $serializer, PersistentCollection $directs)
     {
-        $indirects = array();
-        $i = 0;
+        $downlines = array();
+
         foreach ($directs as $direct){
             $i = $i+1;
-            array_push($indirects, $direct);
+
+            $downlines[] = [$direct->getUsername()];
+            array_push($downlines,$direct->getUsername());
+            $ds = $direct->getDirects();
+            $downlines[$i]=[json_decode($this->GetDownlines($serializer,$ds))];
+
         }
 
-        $mydownlines = $indirects[$i];
-        $downlines = $mydownlines->getDirects();
-        $this->GetDownlines($serializer, $downlines);
+        $jsonObject = $serializer->serialize($downlines, 'json', [
+            'circular_reference_handler' => function ($object) {
+                return $object;
+            }
+        ]);
 
-        $jsonObject = $serializer->serialize($indirects, 'json', [
+        return $jsonObject;
+
+
+    }
+
+    /////////////////////////
+    ////   GET INDIRECTS ////
+    /////////////////////////
+
+    public function GetIndirects(SerializerInterface $serializer, PersistentCollection $directs)
+    {
+        $downlines = array();
+
+        foreach ($directs as $direct){
+
+            $downlines[] = [$direct->getUsername()];
+            //array_push($downlines,$direct->getUsername());
+            $ds = $direct->getDirects();
+            json_decode($this->GetDownlines($serializer,$ds));
+        }
+
+        $jsonObject = $serializer->serialize($downlines, 'json', [
             'circular_reference_handler' => function ($object) {
                 return $object;
             }
